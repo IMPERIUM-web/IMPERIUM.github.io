@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>IMPERIUM</title>
+<script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06050c;--bg2:#0d0c18;--gold:#c9a840;--gold2:#f0c84a;--red:#cc3322;--panel:rgba(9,8,18,.97);--border:#28224a;--text:#ddd0b5;--dim:#7a7098;}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'Crimson Text',serif;background:var(--bg);color:var(--text)}
+button{cursor:pointer;font-family:inherit;transition:.15s}input,select,textarea{font-family:inherit}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg2)}::-webkit-scrollbar-thumb{background:var(--border)}
+/* SCREENS */
+.sc{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;z-index:1}
+.sc.on{display:flex}
+#sl{background:radial-gradient(ellipse at 50% 30%,#180f38,#06050c 70%)}
+#sm{background:radial-gradient(ellipse at 50% 20%,#180f38,#06050c 80%)}
+#ss{background:radial-gradient(ellipse at 50% 20%,#180f38,#06050c 80%);overflow-y:auto;padding:22px 0}
+#sg{flex-direction:row;align-items:stretch}
+/* BOXES */
+.box{background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--gold);padding:34px 32px 28px;position:relative;box-shadow:0 20px 80px rgba(0,0,0,.85)}
+.box::before,.box::after{content:'✦';position:absolute;top:-12px;font-size:12px;color:var(--gold);background:var(--panel);padding:0 7px}
+.box::before{left:16px}.box::after{right:16px}
+.brand{text-align:center;margin-bottom:22px}
+.bt{font-family:'Cinzel',serif;font-size:42px;font-weight:900;letter-spacing:7px;color:var(--gold2);text-shadow:0 0 50px rgba(200,165,64,.55)}
+.bs{font-family:'Cinzel',serif;font-size:9px;letter-spacing:4px;color:var(--dim);margin-top:2px}
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:18px}
+.tb{flex:1;padding:9px;background:none;border:none;border-bottom:2px solid transparent;color:var(--dim);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1.5px;margin-bottom:-1px;cursor:pointer}
+.tb.on{color:var(--gold);border-bottom-color:var(--gold)}
+.tp{display:none}.tp.on{display:block}
+.fg{margin-bottom:11px}
+.fg label{display:block;font-size:9px;letter-spacing:2px;color:var(--dim);text-transform:uppercase;margin-bottom:4px;font-family:'Cinzel',serif}
+.fg input,.fg select{width:100%;padding:9px 12px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);font-size:14px;outline:none}
+.fg input:focus,.fg select:focus{border-color:var(--gold)}
+.fg select option{background:#0d0c18}
+.bg{width:100%;padding:11px;background:linear-gradient(135deg,#583800,#c9a840);border:none;color:#080400;font-family:'Cinzel',serif;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:5px;cursor:pointer}
+.bg:hover{background:linear-gradient(135deg,#c9a840,#f0c84a);box-shadow:0 4px 20px rgba(200,165,64,.35)}
+.bg:disabled{opacity:.4;cursor:not-allowed}
+.em{min-height:16px;text-align:center;font-size:11px;margin-top:8px;color:#e05030}
+/* MENU */
+.mt{font-family:'Cinzel',serif;font-size:50px;font-weight:900;letter-spacing:8px;color:var(--gold2);text-align:center;animation:glow 3s ease-in-out infinite}
+@keyframes glow{0%,100%{text-shadow:0 0 30px rgba(200,165,64,.4)}50%{text-shadow:0 0 100px rgba(200,165,64,.85)}}
+.ms{font-family:'Cinzel',serif;font-size:9px;letter-spacing:5px;color:var(--dim);text-align:center;margin:5px 0 22px}
+.mbtns{display:flex;flex-direction:column;gap:8px;width:420px;margin-bottom:14px}
+.mbtn{padding:14px 18px;background:var(--panel);border:1px solid var(--border);color:var(--text);font-family:'Cinzel',serif;font-size:13px;letter-spacing:2px;position:relative;overflow:hidden;text-align:left;cursor:pointer}
+.mbtn::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--gold);transform:scaleY(0);transition:.2s}
+.mbtn:hover{border-color:var(--gold);color:var(--gold);background:rgba(200,165,64,.04)}.mbtn:hover::before{transform:scaleY(1)}
+.bsm{padding:7px 15px;background:none;border:1px solid #1c1838;color:var(--dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;cursor:pointer}.bsm:hover{border-color:var(--dim);color:var(--text)}
+/* SETUP */
+.sbox{background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--gold);padding:28px;width:560px;box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.sbox h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);letter-spacing:4px;text-align:center;margin-bottom:18px}
+.sect{font-size:9px;letter-spacing:2px;color:var(--dim);font-family:'Cinzel',serif;text-transform:uppercase;border-bottom:1px solid var(--border);padding-bottom:4px;margin:12px 0 8px}
+.prow{display:flex;align-items:center;gap:7px;padding:7px;background:rgba(255,255,255,.02);border:1px solid #141228;margin-bottom:4px}
+.pdot{width:18px;height:18px;border-radius:50%;flex-shrink:0;border:2px solid rgba(255,255,255,.2)}
+.pni{flex:1;padding:6px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);font-size:13px;outline:none}.pni:focus{border-color:var(--gold)}
+.psel{padding:6px 9px;background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--text);font-size:12px;outline:none}.psel option{background:#0d0c18}
+.bdel{width:22px;height:22px;background:none;border:1px solid #281018;color:#662030;font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer}.bdel:hover{border-color:var(--red);color:var(--red)}
+.bap{width:100%;padding:7px;background:none;border:1px dashed var(--border);color:var(--dim);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;margin-bottom:10px;cursor:pointer}.bap:hover{border-color:var(--gold);color:var(--gold)}
+.orow{display:flex;align-items:center;justify-content:space-between;padding:7px 0;font-size:13px;border-bottom:1px solid #141228}
+.tog{padding:4px 11px;background:none;border:1px solid var(--border);color:var(--dim);font-size:9px;font-family:'Cinzel',serif;letter-spacing:1px;cursor:pointer}.tog.on{background:rgba(200,165,64,.1);border-color:var(--gold);color:var(--gold)}
+.sfoot{display:flex;gap:9px;margin-top:14px}
+.bgh{flex:1;padding:10px;background:none;border:1px solid var(--border);color:var(--dim);font-family:'Cinzel',serif;font-size:11px;letter-spacing:1px;cursor:pointer}.bgh:hover{border-color:var(--text);color:var(--text)}
+/* ONLINE LOBBY */
+#slo{background:radial-gradient(ellipse at 50% 20%,#180f38,#06050c 80%);overflow-y:auto;padding:22px 0}
+.lbox{background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--gold);padding:28px;width:500px}
+.lbox h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);letter-spacing:4px;text-align:center;margin-bottom:16px}
+.rcode{font-family:'Cinzel',serif;font-size:38px;letter-spacing:8px;color:var(--gold2);text-align:center;padding:13px;background:rgba(200,165,64,.08);border:1px solid var(--gold);margin:10px 0;cursor:pointer;text-shadow:0 0 30px rgba(200,165,64,.4)}.rcode:hover{background:rgba(200,165,64,.15)}
+.lpi{display:flex;align-items:center;gap:8px;padding:7px 8px;border:1px solid var(--border);margin-bottom:3px}
+.lpd{width:11px;height:11px;border-radius:50%;border:1px solid rgba(255,255,255,.2)}.lpn{font-size:12px;font-family:'Cinzel',serif}.lps{margin-left:auto}
+.ob{background:rgba(30,180,60,.12);border:1px solid #28c050;color:#28c050;padding:2px 6px;font-size:9px;font-family:'Cinzel',serif;letter-spacing:1px}
+.lan-info{background:rgba(200,165,64,.06);border:1px solid rgba(200,165,64,.25);padding:10px 12px;font-size:11px;color:var(--dim);line-height:1.7;margin-bottom:12px}
+.lan-info b{color:var(--gold)}
+.ip-display{font-family:'Cinzel',serif;font-size:14px;color:var(--gold2);text-align:center;padding:8px;background:rgba(0,0,0,.3);border:1px solid var(--border);margin:8px 0;letter-spacing:1px}
+/* GAME MAP */
+#mw{flex:1;position:relative;overflow:hidden;background:#030210}
+#ws{position:absolute;inset:0;width:100%;height:100%;cursor:grab;user-select:none}
+#ws.drag{cursor:grabbing}
+/* HUD */
+#hud{position:absolute;top:0;left:0;right:0;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;background:linear-gradient(180deg,rgba(6,5,12,.97) 60%,transparent);z-index:10;pointer-events:none}
+.hlogo{font-family:'Cinzel',serif;font-size:14px;color:var(--gold);letter-spacing:4px}
+#hph{font-family:'Cinzel',serif;font-size:10px;color:var(--dim);letter-spacing:2px;padding:4px 11px;border:1px solid var(--border);background:var(--panel)}
+#hwt{font-size:10px;color:var(--dim)}
+/* PHASE BANNER */
+#pb{position:absolute;top:46px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--gold);padding:6px 20px;font-family:'Cinzel',serif;font-size:11px;color:var(--gold);letter-spacing:2px;z-index:10;pointer-events:none;text-align:center;min-width:250px;opacity:0;transition:.3s;white-space:nowrap}
+#pb.on{opacity:1}
+#phelp{font-size:10px;color:var(--dim);letter-spacing:.3px;margin-top:2px;font-family:'Crimson Text',serif;font-style:italic}
+/* ZOOM */
+#zc{position:absolute;bottom:36px;left:10px;display:flex;flex-direction:column;gap:3px;z-index:10}
+.zb{width:28px;height:28px;background:var(--panel);border:1px solid var(--border);color:var(--text);font-size:14px;display:flex;align-items:center;justify-content:center;cursor:pointer}.zb:hover{border-color:var(--gold);color:var(--gold)}
+/* TURN DOTS */
+#tdv{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:10;pointer-events:none}
+.tdot{width:9px;height:9px;border-radius:50%;border:1px solid rgba(255,255,255,.15);transition:.25s}.tdot.cur{transform:scale(1.6);box-shadow:0 0 8px currentColor}
+/* LOG */
+#gl{position:absolute;bottom:8px;left:8px;width:240px;z-index:10;pointer-events:none}
+.le{font-size:10px;color:var(--dim);padding:1px 0;line-height:1.4}.le.bat{color:#bb5530}.le.win{color:var(--gold)}.le.crd{color:#5588cc}
+/* LEGEND */
+#leg{position:absolute;top:44px;right:8px;background:rgba(3,2,10,.9);border:1px solid var(--border);padding:6px 8px;z-index:10;pointer-events:none}
+#leg h4{font-size:8px;letter-spacing:2px;color:var(--dim);margin-bottom:4px;font-family:'Cinzel',serif}
+.li{display:flex;align-items:center;gap:4px;margin-bottom:2px}.lid{width:7px;height:7px;border-radius:50%;flex-shrink:0}.lin{font-size:8px;color:var(--dim);flex:1}.lib{font-size:8px;color:var(--gold)}
+/* WEATHER */
+#wb{position:absolute;top:93px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--border);padding:5px 16px;font-size:10px;color:var(--dim);z-index:10;pointer-events:none;opacity:0;transition:.4s;font-family:'Cinzel',serif;letter-spacing:1px;white-space:nowrap}
+#wb.on{opacity:1}
+/* TOOLTIP */
+#tip{position:absolute;background:var(--panel);border:1px solid var(--border);border-top:2px solid var(--gold);padding:7px 10px;pointer-events:none;z-index:30;display:none;min-width:115px}
+#tip h4{font-family:'Cinzel',serif;font-size:11px;color:var(--gold);margin-bottom:2px}
+#tip p{font-size:10px;color:var(--dim);line-height:1.5}
+/* MISSION */
+#msb{position:absolute;bottom:26px;right:8px;background:var(--panel);border:1px solid #7020a0;border-top:2px solid #a050e0;padding:5px 8px;z-index:10;max-width:180px;display:none}
+#msb h4{font-family:'Cinzel',serif;font-size:8px;letter-spacing:1.5px;color:#a050e0;margin-bottom:2px}
+#msb p{font-size:9px;color:var(--dim);line-height:1.4}
+/* SIDEBAR */
+#sb{width:245px;background:var(--bg2);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+.sbx{padding:8px 10px;border-bottom:1px solid var(--border)}
+.sbt{font-size:8px;letter-spacing:2px;color:var(--dim);font-family:'Cinzel',serif;text-transform:uppercase;margin-bottom:5px}
+.pi{display:flex;align-items:center;gap:6px;padding:5px 5px;border:1px solid transparent;margin-bottom:2px}
+.pi.cur{border-color:var(--gold);background:rgba(200,165,64,.05)}.pi.dead{opacity:.28}
+.pid{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:1px solid rgba(255,255,255,.15)}
+.pin{font-size:11px;font-family:'Cinzel',serif;line-height:1.2}.pis{font-size:9px;color:var(--dim)}
+.ir{display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px}
+.ir span:first-child{color:var(--dim)}.ir span:last-child{color:var(--gold);font-family:'Cinzel',serif}
+/* CARDS */
+#ca{flex:1;overflow-y:auto;padding:8px 10px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:3px}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.card{background:rgba(255,255,255,.03);border:1px solid var(--border);padding:5px 3px;text-align:center;cursor:pointer;border-left-width:3px;transition:.12s}
+.card:hover{border-color:var(--gold);background:rgba(200,165,64,.07)}
+.card.sel{border-color:var(--gold);background:rgba(200,165,64,.13);box-shadow:0 0 6px rgba(200,165,64,.2)}
+.ci2{font-size:13px;line-height:1.4}.cn2{font-size:8px;font-family:'Cinzel',serif;color:var(--dim);line-height:1.3}
+.cti{border-left-color:#2a5a2a}.ctc{border-left-color:#2a4a7a}.ctn{border-left-color:#6a2a2a}.ctw{border-left-color:#6a5a1a}.cts{border-left-color:#6a2a7a}
+.btr{width:100%;padding:6px;background:none;border:1px solid var(--gold);color:var(--gold);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;cursor:pointer}.btr:hover{background:rgba(200,165,64,.15)}.btr:disabled{opacity:.38;cursor:not-allowed;border-color:var(--border);color:var(--dim)}
+/* ACTION PANEL */
+#ap{padding:8px 10px}
+#ai2{font-size:11px;color:var(--dim);font-style:italic;text-align:center;min-height:26px;display:flex;align-items:center;justify-content:center;margin-bottom:6px;line-height:1.5}
+.abs{display:flex;flex-direction:column;gap:4px}
+.ab{width:100%;padding:8px;background:none;border:1px solid var(--border);color:var(--text);font-family:'Cinzel',serif;font-size:10px;letter-spacing:1px;cursor:pointer}
+.ab:hover{border-color:var(--gold);color:var(--gold)}
+.ab.main{background:linear-gradient(135deg,rgba(70,40,0,.5),rgba(200,165,64,.2));border-color:var(--gold);color:var(--gold)}
+.ab.main:hover{background:linear-gradient(135deg,rgba(200,165,64,.28),rgba(240,200,80,.18))}
+.ab.dng{border-color:#3a1008;color:#884030}.ab.dng:hover{border-color:var(--red);color:var(--red)}
+.ab:disabled{opacity:.35;cursor:not-allowed}
+/* MODALS */
+.mbg{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;z-index:200}
+.mbg.on{display:flex}
+.mb{background:var(--panel);border:2px solid var(--gold);padding:22px;min-width:320px;text-align:center;box-shadow:0 0 60px rgba(200,165,64,.15)}
+.mb h3{font-family:'Cinzel',serif;font-size:15px;color:var(--gold);letter-spacing:3px;margin-bottom:5px}
+.mb p{color:var(--dim);font-style:italic;font-size:12px;margin-bottom:12px;line-height:1.5}
+.drow{display:flex;gap:4px;justify-content:center}
+.die{width:40px;height:40px;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:20px;font-family:'Cinzel',serif;font-weight:900}
+.da{border-color:#aa2211;color:#ee4422}.dd{border-color:#2255aa;color:#4488dd}.won{box-shadow:0 0 12px currentColor}
+.dr{font-size:12px;color:var(--text);margin-bottom:11px;font-family:'Cinzel',serif;min-height:18px}
+.mr{display:flex;gap:7px;margin-top:3px}
+.tv{font-family:'Cinzel',serif;font-size:36px;color:var(--gold2);margin:7px 0}
+input[type=range]{width:100%;accent-color:var(--gold);margin-bottom:10px}
+/* TUTORIAL */
+#tut{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:500}
+#tut.on{display:flex}
+.tbox{background:var(--panel);border:2px solid var(--gold);padding:26px 30px;max-width:520px;width:92%;text-align:center}
+.tbox h2{font-family:'Cinzel',serif;font-size:17px;color:var(--gold);letter-spacing:3px;margin-bottom:9px}
+.tbox p{font-size:13px;line-height:1.75;color:var(--text);margin-bottom:16px}
+.tstep{font-size:8px;color:var(--dim);letter-spacing:2px;font-family:'Cinzel',serif;margin-bottom:10px}
+.tdots2{display:flex;gap:5px;justify-content:center;margin-bottom:10px}
+.tdot2{width:6px;height:6px;border-radius:50%;background:var(--border);transition:.2s}.tdot2.on{background:var(--gold)}
+.tnav{display:flex;gap:8px;justify-content:center}
+/* WIN */
+#wo{position:fixed;inset:0;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;z-index:600}
+#wo.on{display:flex}
+.wb2{background:var(--panel);border:2px solid var(--gold);padding:44px 56px;text-align:center;box-shadow:0 0 100px rgba(200,165,64,.4)}
+.wb2 h1{font-family:'Cinzel',serif;font-size:44px;color:var(--gold2);letter-spacing:8px;text-shadow:0 0 80px rgba(240,200,80,.7)}
+.wb2 p{color:var(--dim);font-style:italic;font-size:14px;margin:8px 0 24px}
+.crown{font-size:64px;display:block;margin-bottom:8px;animation:ci .7s cubic-bezier(.2,1.4,.5,1)}
+@keyframes ci{0%{transform:scale(0) rotate(-180deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+/* NOTIF */
+#nt{position:fixed;top:48px;left:50%;transform:translateX(-50%) translateY(-10px);background:var(--panel);border:1px solid var(--gold);padding:7px 16px;font-family:'Cinzel',serif;font-size:11px;color:var(--gold);letter-spacing:2px;opacity:0;transition:.22s;z-index:400;pointer-events:none;white-space:nowrap}
+#nt.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.rh{color:var(--gold);font-family:'Cinzel',serif;font-size:9px;letter-spacing:1.5px;margin:10px 0 3px}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="sc on" id="sl">
+  <div class="box" style="width:378px">
+    <div class="brand"><div class="bt">IMPERIUM</div><div class="bs">Conquest of the World</div></div>
+    <div class="tabs">
+      <button class="tb on" onclick="stab('login',this)">CONNEXION</button>
+      <button class="tb" onclick="stab('reg',this)">INSCRIPTION</button>
+    </div>
+    <div class="tp on" id="tp-login">
+      <div class="fg"><label>Commandant</label><input id="lu" placeholder="Votre nom" autocomplete="off"></div>
+      <div class="fg"><label>Mot de passe</label><input id="lp" type="password" placeholder="Mot de passe"></div>
+      <button class="bg" onclick="doLogin()">ENTRER EN GUERRE</button>
+    </div>
+    <div class="tp" id="tp-reg">
+      <div class="fg"><label>Nom de commandant</label><input id="ru" placeholder="Choisir un nom" autocomplete="off"></div>
+      <div class="fg"><label>Mot de passe</label><input id="rp" type="password" placeholder="4 caractères minimum"></div>
+      <div class="fg"><label>Confirmer</label><input id="rc" type="password" placeholder="Confirmer"></div>
+      <button class="bg" onclick="doReg()">REJOINDRE LA CONQUÊTE</button>
+    </div>
+    <div class="em" id="aerr"></div>
+  </div>
+</div>
+
+<!-- MENU -->
+<div class="sc" id="sm">
+  <div class="mt">IMPERIUM</div>
+  <div class="ms">Conquest of the World</div>
+  <div style="font-size:13px;color:var(--dim);margin-bottom:20px">Bienvenue, <b id="mname" style="color:var(--gold);font-family:'Cinzel',serif;font-size:14px"></b></div>
+  <div class="mbtns">
+    <button class="mbtn" onclick="goSetup(false)">⚔ &nbsp;NOUVELLE CONQUÊTE — LOCAL / IA</button>
+    <button class="mbtn" onclick="goSetup(true)">🌐 &nbsp;MULTIJOUEUR EN LIGNE / LAN</button>
+    <button class="mbtn" id="bcont" style="display:none" onclick="loadSave()">▶ &nbsp;REPRENDRE LA CAMPAGNE</button>
+    <button class="mbtn" onclick="openTut()">📖 &nbsp;TUTORIEL</button>
+    <button class="mbtn" onclick="showHOF()">🏆 &nbsp;HALL OF GLORY</button>
+  </div>
+  <button class="bsm" onclick="doLogout()">← Déconnexion</button>
+</div>
+
+<!-- SETUP -->
+<div class="sc" id="ss">
+  <div class="sbox">
+    <h2 id="setup-title">ASSEMBLER VOS FORCES</h2>
+    <div id="setup-local">
+      <div class="sect">Joueurs (2–6)</div>
+      <div id="prows"></div>
+      <button class="bap" id="bap" onclick="addP()">+ Ajouter un joueur</button>
+      <div class="sect">Options</div>
+      <div class="orow"><span>Météo aléatoire</span><button class="tog on" id="tog-w" onclick="tOpt('w',this)">ON</button></div>
+      <div class="orow"><span>Cartes Stratagème</span><button class="tog on" id="tog-s" onclick="tOpt('s',this)">ON</button></div>
+      <div class="orow"><span>Missions secrètes</span><button class="tog" id="tog-m" onclick="tOpt('m',this)">OFF</button></div>
+      <div class="orow"><span>Difficulté IA</span>
+        <select class="psel" id="ai-lvl" style="min-width:125px">
+          <option value="0">Apprenti</option><option value="1" selected>Commandant</option><option value="2">Seigneur de guerre</option>
+        </select>
+      </div>
+    </div>
+    <div id="setup-online" style="display:none">
+      <div class="orow"><span>Type de réseau</span>
+        <select class="psel" id="net-mode" onchange="onNetMode()" style="min-width:160px">
+          <option value="internet">Internet (Gun.js)</option>
+          <option value="lan">Réseau Local (LAN)</option>
+        </select>
+      </div>
+      <div id="setup-internet">
+        <p style="font-size:12px;color:var(--dim);margin:10px 0 4px;font-style:italic">Crée une salle et partage le code à tes amis. Ils peuvent être n'importe où dans le monde.</p>
+      </div>
+      <div id="setup-lan" style="display:none">
+        <div class="lan-info">
+          <b>Mode Réseau Local (LAN)</b><br>
+          Tous les joueurs doivent être connectés au même réseau Wi-Fi / câble.<br><br>
+          <b>Hôte :</b> Crée la salle. Votre IP locale est détectée automatiquement.<br>
+          <b>Invités :</b> Entrez l'IP de l'hôte pour rejoindre.
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div class="fg" style="flex:1;margin:0"><label>IP Locale détectée</label><input id="local-ip" readonly style="color:var(--gold);font-family:'Cinzel',serif;letter-spacing:1px"></div>
+          <button class="bg" onclick="refreshIP()" style="width:auto;padding:9px 12px;margin-top:14px;white-space:nowrap;font-size:10px">↻ Refresh</button>
+        </div>
+        <div class="fg"><label>IP de l'hôte (pour rejoindre)</label><input id="host-ip" placeholder="ex: 192.168.1.42"></div>
+      </div>
+      <div class="sect">Nom du joueur</div>
+      <div class="fg"><label>Votre nom en ligne</label><input id="online-name" placeholder="Votre nom de commandant"></div>
+      <div class="sect">Options de partie (hôte uniquement)</div>
+      <div class="orow"><span>Météo aléatoire</span><button class="tog on" id="tog-w2" onclick="tOpt2('w',this)">ON</button></div>
+      <div class="orow"><span>Cartes Stratagème</span><button class="tog on" id="tog-s2" onclick="tOpt2('s',this)">ON</button></div>
+      <div class="orow"><span>Missions secrètes</span><button class="tog" id="tog-m2" onclick="tOpt2('m',this)">OFF</button></div>
+    </div>
+    <div class="sfoot">
+      <button class="bgh" onclick="goMenu()">← RETOUR</button>
+      <button class="bg" style="flex:2;padding:11px" id="setup-go" onclick="startOrOnline()">LANCER →</button>
+    </div>
+  </div>
+</div>
+
+<!-- LOBBY ONLINE -->
+<div class="sc" id="slo">
+  <div class="lbox">
+    <h2 id="ltitle">SALLE EN LIGNE</h2>
+    <div id="lnet-info" style="font-size:11px;color:var(--dim);text-align:center;margin-bottom:10px;font-family:'Cinzel',serif;letter-spacing:1px"></div>
+    <div id="lcreate" style="display:none">
+      <p style="color:var(--dim);font-size:12px;text-align:center;font-style:italic;margin-bottom:5px">Partagez ce code avec vos adversaires :</p>
+      <div class="rcode" id="rcode" onclick="copyCode()" title="Cliquer pour copier">------</div>
+      <p style="color:var(--dim);font-size:9px;text-align:center;font-family:'Cinzel',serif;letter-spacing:1px;margin-bottom:8px">CLIQUEZ LE CODE POUR COPIER</p>
+    </div>
+    <div id="ljoin" style="display:none">
+      <div class="fg"><label>Code de la salle (6 caractères)</label>
+        <input id="jcode" placeholder="XXXXXX" maxlength="6" style="text-transform:uppercase;text-align:center;font-size:20px;letter-spacing:4px;font-family:'Cinzel',serif">
+      </div>
+      <button class="bg" style="margin-bottom:10px" onclick="joinRoom()">REJOINDRE</button>
+    </div>
+    <div style="display:flex;gap:7px;margin-bottom:12px" id="lchoice">
+      <button class="bgh" style="flex:1" onclick="showCreate()">CRÉER UNE SALLE</button>
+      <button class="bgh" style="flex:1" onclick="showJoin()">REJOINDRE</button>
+    </div>
+    <div class="sect">Joueurs connectés</div>
+    <div id="lpl" style="margin:8px 0;min-height:44px"></div>
+    <div class="sfoot">
+      <button class="bgh" onclick="goSetup(true)">← RETOUR</button>
+      <button class="bg" style="flex:2;padding:11px" id="bstart" onclick="startOnline()" disabled>DÉMARRER</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div class="sc" id="sg">
+  <div id="mw">
+    <svg id="ws" viewBox="0 0 1000 540" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="og" cx="50%" cy="45%" r="70%">
+          <stop offset="0%" stop-color="#0c1e38"/>
+          <stop offset="60%" stop-color="#060f1c"/>
+          <stop offset="100%" stop-color="#030810"/>
+        </radialGradient>
+        <pattern id="gp" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M40 0L0 0 0 40" fill="none" stroke="rgba(255,255,255,.015)" stroke-width=".5"/>
+        </pattern>
+        <filter id="gf">
+          <feGaussianBlur stdDeviation="3" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+        <filter id="sf">
+          <feGaussianBlur stdDeviation="2"/>
+        </filter>
+      </defs>
+      <rect width="1000" height="540" fill="url(#og)"/>
+      <rect width="1000" height="540" fill="url(#gp)"/>
+      <!-- Ocean texture lines -->
+      <g opacity="0.04" stroke="#4488aa" stroke-width="0.4">
+        <path d="M0,135 Q250,120 500,135 Q750,150 1000,135"/><path d="M0,175 Q250,160 500,175 Q750,190 1000,175"/>
+        <path d="M0,215 Q250,200 500,215 Q750,230 1000,215"/><path d="M0,255 Q250,240 500,255 Q750,270 1000,255"/>
+        <path d="M0,295 Q250,280 500,295 Q750,310 1000,295"/><path d="M0,335 Q250,320 500,335 Q750,350 1000,335"/>
+        <path d="M0,375 Q250,360 500,375 Q750,390 1000,375"/><path d="M0,415 Q250,400 500,415 Q750,430 1000,415"/>
+        <path d="M0,455 Q250,440 500,455 Q750,470 1000,455"/><path d="M0,495 Q250,480 500,495 Q750,510 1000,495"/>
+      </g>
+      <g id="cbg"></g>
+      <g id="clines"></g>
+      <g id="tnodes"></g>
+      <g id="tlabels"></g>
+    </svg>
+    <div id="hud"><span class="hlogo">IMPERIUM</span><span id="hph">DRAFT</span><span id="hwt">☀ Ciel dégagé</span></div>
+    <div id="pb"><div id="ptitle"></div><div id="phelp"></div></div>
+    <div id="wb"></div>
+    <div id="gl"></div>
+    <div id="tip"></div>
+    <div id="tdv"></div>
+    <div id="leg"><h4>CONTINENTS</h4><div id="legi"></div></div>
+    <div id="msb"><h4>⚑ MISSION SECRÈTE</h4><p id="mst"></p></div>
+    <div id="zc">
+      <button class="zb" onclick="dz(-1)">+</button>
+      <button class="zb" onclick="dz(1)">−</button>
+      <button class="zb" onclick="rz()" title="Reset vue">⌖</button>
+    </div>
+  </div>
+  <div id="sb">
+    <div class="sbx"><div class="sbt">Commandants</div><div id="plist"></div></div>
+    <div class="sbx"><div class="sbt">Tour en cours</div><div id="tinfo"></div></div>
+    <div id="ca">
+      <div class="sbt">Cartes <span id="ccount" style="color:var(--gold)"></span></div>
+      <div class="cg" id="cgrid"></div>
+      <button class="btr" id="btr" onclick="doTrade()" disabled>ÉCHANGER (3 cartes)</button>
+    </div>
+    <div id="ap"><div id="ai2">En attente…</div><div class="abs" id="abtns"></div></div>
+  </div>
+</div>
+
+<!-- DICE MODAL -->
+<div class="mbg" id="m-dice">
+  <div class="mb" style="min-width:370px">
+    <h3>COMBAT !</h3><p id="dsub"></p>
+    <div style="display:flex;justify-content:space-around;margin-bottom:11px">
+      <div><div style="font-family:'Cinzel',serif;font-size:10px;color:#ee4422;letter-spacing:2px;margin-bottom:7px">ATTAQUANT</div><div class="drow" id="datt"></div></div>
+      <div style="font-family:'Cinzel',serif;font-size:16px;color:var(--border);padding-top:14px">VS</div>
+      <div><div style="font-family:'Cinzel',serif;font-size:10px;color:#4488dd;letter-spacing:2px;margin-bottom:7px">DÉFENSEUR</div><div class="drow" id="ddef"></div></div>
+    </div>
+    <div class="dr" id="dres"></div>
+    <button class="bg" onclick="closeDice()" style="min-width:140px;padding:10px">CONTINUER</button>
+  </div>
+</div>
+
+<!-- TROOP MODAL -->
+<div class="mbg" id="m-troop">
+  <div class="mb" style="min-width:310px">
+    <h3 id="ttitle">DÉPLACER DES TROUPES</h3><p id="tsub"></p>
+    <div class="tv" id="tval">1</div>
+    <input type="range" id="tsl" min="1" max="10" value="1" oninput="document.getElementById('tval').textContent=this.value">
+    <div class="mr">
+      <button class="bgh" style="flex:1" onclick="cancelTroop()">ANNULER</button>
+      <button class="bg" style="flex:2;padding:10px" onclick="confirmTroop()">CONFIRMER</button>
+    </div>
+  </div>
+</div>
+
+<!-- RULES MODAL -->
+<div class="mbg" id="m-rules">
+  <div class="mb" style="max-width:500px;text-align:left;max-height:80vh;overflow-y:auto;padding:24px">
+    <h3 style="text-align:center;margin-bottom:14px">RÈGLES D'IMPERIUM</h3>
+    <div style="font-size:13px;line-height:1.75;color:var(--text)">
+      <div class="rh">🎯 OBJECTIF</div>Conquérir les 42 territoires, ou accomplir votre Mission Secrète (si activée).
+      <div class="rh">🔄 UN TOUR EN 3 PHASES</div>
+      <b>1. DRAFT</b> — Recevez des troupes = max(3, vos territoires ÷ 3) + bonus de continent. Cliquez vos territoires pour placer. <b>Clic droit</b> = tout placer ici.<br>
+      <b>2. ATTAQUE</b> — Cliquez votre territoire (≥ 2 troupes) ▶ cliquez un ennemi adjacent (en rouge). 1-3 dés ATK vs 1-2 dés DEF. Dé le plus haut gagne, égalité = défenseur.<br>
+      <b>3. FORTIFICATION</b> — Déplacez des troupes une seule fois entre deux de vos territoires connectés.
+      <div class="rh">🗺️ BONUS DE CONTINENT</div>Nordica +5 · Méridius +2 · Oldoria +5 · Solaria +3 · Orientus +7 · Australis +2
+      <div class="rh">🃏 CARTES TERRITOIRE</div>Conquérez ≥ 1 territoire/tour → piochez une carte (Infanterie ⚔ / Cavalerie ♘ / Canon 🔫). 3 identiques OU une de chaque = échange pour des troupes bonus (valeur croissante). Joker ★ = n'importe quel type.
+      <div class="rh">⚡ CARTES STRATAGÈME</div>Blitz ⚡ (+1 dé ATK) · Bouclier 🛡 (+1 dé DEF) · Peste ☠ (−3 troupes ennemies) · Ralliement ⚑ (+5 troupes) · Espionnage 👁 (voir cartes d'un ennemi). <b>Double-cliquez</b> pour activer.
+      <div class="rh">🌦 MÉTÉO</div>Chaque round : Tempête ⛈ (−1 dé ATK min 1) · Blizzard ❄ (Nordica bloquée) · Sécheresse 🌵 (pas de bonus continents) · Vent Favorable 🌬 (relancez le plus bas dé ATK).
+      <div class="rh">🌐 MODE MULTIJOUEUR</div><b>Internet</b> : Gun.js P2P, fonctionne partout. Code 6 lettres à partager.<br><b>LAN</b> : Même réseau local. L'hôte partage son IP. Pas d'internet requis.
+    </div>
+    <button class="bg" onclick="closeM('m-rules')" style="width:100%;margin-top:14px;padding:10px">COMPRIS</button>
+  </div>
+</div>
+
+<!-- HOF MODAL -->
+<div class="mbg" id="m-hof">
+  <div class="mb" style="min-width:350px">
+    <h3 style="margin-bottom:12px">🏆 HALL OF GLORY</h3>
+    <div id="hofc" style="text-align:left"></div>
+    <button class="bg" onclick="closeM('m-hof')" style="width:100%;margin-top:12px;padding:10px">FERMER</button>
+  </div>
+</div>
+
+<!-- TUTORIAL -->
+<div id="tut">
+  <div class="tbox">
+    <div class="tstep" id="tstep">ÉTAPE 1/6</div>
+    <div class="tdots2" id="tdots2"></div>
+    <h2 id="ttit"></h2>
+    <svg id="tsvg" width="440" height="108" viewBox="0 0 440 108" style="margin:10px auto;display:block"></svg>
+    <p id="ttxt"></p>
+    <div class="tnav">
+      <button class="bgh" style="min-width:90px" onclick="tutNav(-1)" id="tprev">← RETOUR</button>
+      <button class="bg" style="min-width:140px;padding:10px" onclick="tutNav(1)" id="tnext">SUIVANT →</button>
+    </div>
+  </div>
+</div>
+
+<!-- WIN -->
+<div id="wo"><div class="wb2"><span class="crown">👑</span><h1>VICTOIRE !</h1><p id="wtxt"></p><button class="bg" onclick="goMenu()" style="min-width:200px;padding:13px">RETOUR AU TRÔNE</button></div></div>
+
+<!-- NOTIF -->
+<div id="nt"></div>
+<script>
+'use strict';
+// ══════════════════════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════════════════════
+const PC=['#d93b2a','#2b7fc4','#2ca05a','#e08020','#8040c0','#15a0a0'];
+const PD=['#6a1008','#103c60','#0f5028','#703808','#400880','#055050'];
+const CONTS=[
+  {id:0,n:'Nordica',  bonus:5, cl:'#3a9fd0',bg:'rgba(44,130,200,.12)'},
+  {id:1,n:'Méridius', bonus:2, cl:'#2cb870',bg:'rgba(44,180,100,.12)'},
+  {id:2,n:'Oldoria',  bonus:5, cl:'#a060d0',bg:'rgba(150,80,190,.12)'},
+  {id:3,n:'Solaria',  bonus:3, cl:'#e09040',bg:'rgba(220,120,30,.12)'},
+  {id:4,n:'Orientus', bonus:7, cl:'#d04030',bg:'rgba(210,60,40,.12)'},
+  {id:5,n:'Australis',bonus:2, cl:'#20b090',bg:'rgba(20,160,140,.12)'},
+];
+// Continent background polygons
+const CBGS=[
+  '55,58 325,25 330,68 312,132 255,292 218,292 188,262 165,218 136,218 106,172 92,128 56,128',
+  '218,270 340,268 354,283 358,460 294,530 250,510 216,428 212,308',
+  '398,52 562,48 568,202 520,212 478,200 442,178 426,100',
+  '452,192 618,188 640,362 600,458 518,478 460,438 440,318',
+  '562,42 952,62 958,172 952,482 790,488 742,342 660,280 596,222 568,198',
+  '790,278 962,272 968,488 788,488',
+];
+// 42 territories: id, name, continent, cx, cy, adjacencies, trans-oceanic
+const TD=[
+  // NORDICA (N America)
+  {id:0, n:'Alaska',         c:0,cx:82, cy:88, adj:[1,3,29],   tr:[29]},
+  {id:1, n:'Territoires NW', c:0,cx:165,cy:78, adj:[0,2,3,4]},
+  {id:2, n:'Groenland',      c:0,cx:318,cy:42, adj:[1,4,5,13], tr:[13]},
+  {id:3, n:'Alberta',        c:0,cx:152,cy:148,adj:[0,1,4,6]},
+  {id:4, n:'Ontario',        c:0,cx:232,cy:138,adj:[1,2,3,5,6,7]},
+  {id:5, n:'Québec',         c:0,cx:298,cy:125,adj:[2,4,7]},
+  {id:6, n:'États-Ouest',    c:0,cx:148,cy:205,adj:[3,4,7,8]},
+  {id:7, n:'États-Est',      c:0,cx:242,cy:198,adj:[4,5,6,8]},
+  {id:8, n:'Amér. Centrale', c:0,cx:210,cy:262,adj:[6,7,9]},
+  // MERIDIUS (S America)
+  {id:9, n:'Venezuela',      c:1,cx:268,cy:292,adj:[8,10,11]},
+  {id:10,n:'Brésil',         c:1,cx:298,cy:372,adj:[9,11,12,20],tr:[20]},
+  {id:11,n:'Pérou',          c:1,cx:228,cy:342,adj:[9,10,12]},
+  {id:12,n:'Argentine',      c:1,cx:268,cy:452,adj:[10,11]},
+  // OLDORIA (Europe)
+  {id:13,n:'Islande',        c:2,cx:412,cy:65, adj:[2,14,17],  tr:[2]},
+  {id:14,n:'Gde-Bretagne',   c:2,cx:448,cy:112,adj:[13,15,16]},
+  {id:15,n:'Europe Ouest',   c:2,cx:462,cy:162,adj:[14,16,18,20]},
+  {id:16,n:'Europe Nord',    c:2,cx:498,cy:112,adj:[14,15,17,18,19]},
+  {id:17,n:'Scandinavie',    c:2,cx:508,cy:72, adj:[13,16,19]},
+  {id:18,n:'Europe Sud',     c:2,cx:502,cy:162,adj:[15,16,19,20,21,34]},
+  {id:19,n:'Ukraine',        c:2,cx:558,cy:118,adj:[16,17,18,26,34,37]},
+  // SOLARIA (Africa)
+  {id:20,n:'Afrique Nord',   c:3,cx:478,cy:228,adj:[10,15,18,21,22,23]},
+  {id:21,n:'Égypte',         c:3,cx:545,cy:212,adj:[18,20,22,34]},
+  {id:22,n:'Afrique Est',    c:3,cx:570,cy:308,adj:[20,21,23,24,25,34]},
+  {id:23,n:'Congo',          c:3,cx:508,cy:322,adj:[20,22,24]},
+  {id:24,n:'Afrique Sud',    c:3,cx:508,cy:412,adj:[22,23,25]},
+  {id:25,n:'Madagascar',     c:3,cx:598,cy:358,adj:[22,24]},
+  // ORIENTUS (Asia)
+  {id:26,n:'Oural',          c:4,cx:615,cy:108,adj:[19,27,33,37]},
+  {id:27,n:'Sibérie',        c:4,cx:698,cy:78, adj:[26,28,30,32]},
+  {id:28,n:'Yakoutie',       c:4,cx:778,cy:70, adj:[27,29,30]},
+  {id:29,n:'Kamtchatka',     c:4,cx:868,cy:98, adj:[0,28,30,31,32],tr:[0]},
+  {id:30,n:'Irkoutsk',       c:4,cx:775,cy:125,adj:[27,28,29,32]},
+  {id:31,n:'Japon',          c:4,cx:852,cy:152,adj:[29,32]},
+  {id:32,n:'Mongolie',       c:4,cx:752,cy:152,adj:[27,29,30,31,33]},
+  {id:33,n:'Chine',          c:4,cx:752,cy:215,adj:[27,32,35,36,37]},
+  {id:34,n:'Moyen-Orient',   c:4,cx:595,cy:205,adj:[18,19,21,22,35,37]},
+  {id:35,n:'Inde',           c:4,cx:688,cy:252,adj:[33,34,36,37]},
+  {id:36,n:'Asie Sud-Est',   c:4,cx:775,cy:262,adj:[33,35,38]},
+  {id:37,n:'Afghanistan',    c:4,cx:642,cy:172,adj:[19,26,33,34,35]},
+  // AUSTRALIS
+  {id:38,n:'Indonésie',      c:5,cx:798,cy:312,adj:[36,39,40],tr:[36]},
+  {id:39,n:'Nouv.-Guinée',   c:5,cx:865,cy:295,adj:[38,40,41]},
+  {id:40,n:'Australie Ouest',c:5,cx:815,cy:398,adj:[38,39,41]},
+  {id:41,n:'Australie Est',  c:5,cx:875,cy:405,adj:[39,40]},
+];
+const STRAT=[
+  {id:'blitz', n:'Blitz',      ico:'⚡',d:'+1 dé d\'attaque ce combat'},
+  {id:'shield',n:'Bouclier',   ico:'🛡',d:'+1 dé de défense ce tour'},
+  {id:'plague',n:'Peste',      ico:'☠', d:'−3 troupes ennemies'},
+  {id:'rally', n:'Ralliement', ico:'⚑', d:'+5 troupes draft'},
+  {id:'spy',   n:'Espionnage', ico:'👁',d:'Voir les cartes d\'un ennemi'},
+];
+const WEATHER=[
+  {n:'Ciel Dégagé',   ico:'☀',d:'Conditions normales.',                     e:'clear'},
+  {n:'Tempête',       ico:'⛈',d:'ATK: −1 dé (min 1).',                      e:'storm'},
+  {n:'Blizzard',      ico:'❄',d:'Nordica ne peut pas attaquer.',             e:'blizzard'},
+  {n:'Sécheresse',    ico:'🌵',d:'Pas de bonus de continents.',              e:'drought'},
+  {n:'Vent Favorable',ico:'🌬',d:'Relancez le plus bas dé ATK.',             e:'wind'},
+];
+const MISSIONS=[
+  'Conquérir Nordica + Orientus en entier.',
+  'Conquérir Méridius + Australis en entier.',
+  'Contrôler 24 territoires dont tout Oldoria.',
+  'Contrôler 18 territoires avec ≥2 troupes chacun.',
+  'Conquérir Solaria + Australis en entier.',
+  'Conquérir Oldoria + Solaria en entier.',
+];
+const INIT_T=[0,0,40,35,30,25,20];
+
+// Tutorial
+const TUT=[
+  {t:'BIENVENUE DANS IMPERIUM',d:'Jeu de conquête mondiale pour 2-6 joueurs. Contrôlez les 42 territoires sur 6 continents. Molette = zoom, glisser = déplacer la carte. Survolez un territoire pour voir ses infos.',
+   s:'<rect x="8" y="22" width="78" height="62" rx="6" fill="rgba(44,130,200,.3)" stroke="#3a9fd0"/><text x="47" y="52" fill="#3a9fd0" font-family="Cinzel" font-size="10" text-anchor="middle">Nordica</text><text x="47" y="66" fill="#7a7098" font-size="9" text-anchor="middle">+5</text><rect x="100" y="26" width="72" height="58" rx="6" fill="rgba(150,80,190,.3)" stroke="#a060d0"/><text x="136" y="54" fill="#a060d0" font-family="Cinzel" font-size="10" text-anchor="middle">Oldoria</text><text x="136" y="68" fill="#7a7098" font-size="9" text-anchor="middle">+5</text><rect x="186" y="18" width="78" height="68" rx="6" fill="rgba(210,60,40,.3)" stroke="#d04030"/><text x="225" y="50" fill="#d04030" font-family="Cinzel" font-size="10" text-anchor="middle">Orientus</text><text x="225" y="64" fill="#7a7098" font-size="9" text-anchor="middle">+7</text><rect x="278" y="28" width="66" height="56" rx="6" fill="rgba(220,120,30,.3)" stroke="#e09040"/><text x="311" y="55" fill="#e09040" font-family="Cinzel" font-size="10" text-anchor="middle">Solaria</text><text x="311" y="69" fill="#7a7098" font-size="9" text-anchor="middle">+3</text><rect x="358" y="32" width="70" height="52" rx="6" fill="rgba(44,180,100,.3)" stroke="#2cb870"/><text x="393" y="57" fill="#2cb870" font-family="Cinzel" font-size="10" text-anchor="middle">Méridius</text><text x="393" y="71" fill="#7a7098" font-size="9" text-anchor="middle">+2</text>'},
+  {t:'PHASE 1 : DRAFT — PLACER DES TROUPES',d:'Vous recevez des troupes = max(3, vos territoires ÷ 3) + bonus si vous contrôlez un continent entier. Cliquez sur vos cercles pour placer une troupe. Clic droit = tout placer ici d\'un coup.',
+   s:'<circle cx="80" cy="55" r="34" fill="#d93b2a" stroke="#c9a840" stroke-width="2.5"/><text x="80" y="62" fill="white" font-family="Cinzel" font-size="14" font-weight="bold" text-anchor="middle">3</text><path d="M120,55 L158,55" stroke="#c9a840" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#a)"/><rect x="170" y="38" width="105" height="36" fill="rgba(200,165,64,.15)" stroke="#c9a840" rx="3"/><text x="222" y="54" fill="#7a7098" font-size="10" text-anchor="middle">À placer :</text><text x="222" y="68" fill="#f0c84a" font-family="Cinzel" font-size="20" font-weight="bold" text-anchor="middle">8</text><text x="320" y="50" fill="#7a7098" font-size="10">← clic</text><text x="320" y="65" fill="#7a7098" font-size="10">= +1</text><text x="80" y="98" fill="#c9a840" font-family="Cinzel" font-size="8" text-anchor="middle">VOTRE TERRITOIRE</text><defs><marker id="a" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#c9a840"/></marker></defs>'},
+  {t:'PHASE 2 : ATTAQUE — LES DÉS',d:'Cliquez votre territoire (≥ 2 troupes) — il s\'illumine en or. Puis cliquez un ennemi adjacent (cercles rouges pulsants). L\'attaquant lance 1 à 3 dés, le défenseur 1 à 2. Le dé le plus haut l\'emporte, égalité = défenseur gagne.',
+   s:'<circle cx="100" cy="55" r="32" fill="#d93b2a" stroke="#c9a840" stroke-width="2.5"/><text x="100" y="62" fill="white" font-family="Cinzel" font-size="14" font-weight="bold" text-anchor="middle">6</text><path d="M138,55 L178,55" stroke="#ee4422" stroke-width="2.5" stroke-dasharray="6,4"/><circle cx="215" cy="55" r="30" fill="#2b7fc4" stroke="#ee4422" stroke-width="2.5"/><text x="215" y="62" fill="white" font-family="Cinzel" font-size="14" font-weight="bold" text-anchor="middle">3</text><rect x="265" y="33" width="36" height="36" fill="rgba(220,60,40,.2)" stroke="#ee4422"/><text x="283" y="57" fill="#ee4422" font-family="Cinzel" font-size="19" font-weight="bold" text-anchor="middle">5</text><rect x="305" y="41" width="30" height="30" fill="rgba(40,100,220,.2)" stroke="#4488dd"/><text x="320" y="62" fill="#4488dd" font-family="Cinzel" font-size="16" font-weight="bold" text-anchor="middle">3</text><text x="283" y="90" fill="#c9a840" font-family="Cinzel" font-size="9" text-anchor="middle">ATT gagne !</text><text x="100" y="97" fill="#c9a840" font-family="Cinzel" font-size="8" text-anchor="middle">SÉLECTIONNÉ</text><text x="215" y="97" fill="#ee4422" font-family="Cinzel" font-size="8" text-anchor="middle">CIBLE</text>'},
+  {t:'PHASE 3 : FORTIFICATION',d:'Après vos attaques, déplacez des troupes UNE FOIS entre deux de vos territoires connectés (même couleur). Cliquez la source, puis la destination. Renforcez vos frontières !',
+   s:'<circle cx="88" cy="55" r="30" fill="#d93b2a"/><text x="88" y="62" fill="white" font-family="Cinzel" font-size="14" font-weight="bold" text-anchor="middle">8</text><path d="M122,55 L178,55" stroke="#20b090" stroke-width="2" stroke-dasharray="6,3"/><circle cx="215" cy="55" r="30" fill="#d93b2a" stroke="#20b090" stroke-width="2"/><text x="215" y="62" fill="white" font-family="Cinzel" font-size="14" font-weight="bold" text-anchor="middle">2</text><text x="88" y="96" fill="#7a7098" font-size="10" text-anchor="middle">Arrière</text><text x="215" y="96" fill="#20b090" font-size="10" text-anchor="middle">Frontière</text><text x="152" y="46" fill="#20b090" font-family="Cinzel" font-size="8" text-anchor="middle">déplacer 4</text><text x="88" y="107" fill="#c9a840" font-family="Cinzel" font-size="9" text-anchor="middle">8 → 4</text><text x="215" y="107" fill="#c9a840" font-family="Cinzel" font-size="9" text-anchor="middle">2 → 6</text>'},
+  {t:'CARTES & STRATAGÈMES',d:'Conquérez ≥1 territoire/tour → piochez une carte. 3 identiques OU une de chaque = échangez contre des troupes bonus (valeur croissante). Les Cartes Stratagème ⚡🛡☠⚑👁 ont des effets spéciaux. Double-cliquez pour activer !',
+   s:'<rect x="14" y="14" width="54" height="76" rx="4" fill="rgba(40,80,40,.4)" stroke="#2a5a2a" stroke-width="1.5"/><text x="41" y="52" fill="white" font-size="17" text-anchor="middle">⚔</text><text x="41" y="72" fill="#7a7098" font-family="Cinzel" font-size="7" text-anchor="middle">Infanterie</text><rect x="76" y="14" width="54" height="76" rx="4" fill="rgba(40,60,100,.4)" stroke="#2a4a7a" stroke-width="1.5"/><text x="103" y="52" fill="white" font-size="17" text-anchor="middle">♘</text><text x="103" y="72" fill="#7a7098" font-family="Cinzel" font-size="7" text-anchor="middle">Cavalerie</text><rect x="138" y="14" width="54" height="76" rx="4" fill="rgba(100,40,40,.4)" stroke="#6a2a2a" stroke-width="1.5"/><text x="165" y="52" fill="white" font-size="17" text-anchor="middle">🔫</text><text x="165" y="72" fill="#7a7098" font-family="Cinzel" font-size="7" text-anchor="middle">Canon</text><rect x="208" y="20" width="52" height="68" rx="4" fill="rgba(100,40,120,.4)" stroke="#7a2a9a" stroke-width="1.5"/><text x="234" y="56" fill="white" font-size="19" text-anchor="middle">⚡</text><text x="234" y="74" fill="#a050d0" font-family="Cinzel" font-size="7" text-anchor="middle">Blitz</text><text x="298" y="40" fill="#c9a840" font-family="Cinzel" font-size="9">3 identiques</text><text x="298" y="56" fill="#c9a840" font-family="Cinzel" font-size="9">OU une de</text><text x="298" y="72" fill="#c9a840" font-family="Cinzel" font-size="9">chaque = bonus</text>'},
+  {t:'PRÊT ! BONNE CONQUÊTE !',d:'Contrôlez des continents entiers pour gagner des troupes bonus. Éliminez vos adversaires en conquérant tous leurs territoires. Premier à contrôler le monde entier gagne. En ligne : partagez un code à 6 lettres !',
+   s:'<text x="220" y="32" fill="#c9a840" font-family="Cinzel" font-size="13" font-weight="bold" text-anchor="middle">LES 3 PHASES</text><rect x="8" y="48" width="118" height="46" rx="4" fill="rgba(200,165,64,.06)" stroke="#28224a"/><text x="67" y="68" fill="#ddd0b5" font-family="Cinzel" font-size="9" text-anchor="middle">🎲 DRAFT</text><text x="67" y="84" fill="#7a7098" font-size="9" text-anchor="middle">Placer des troupes</text><rect x="138" y="48" width="118" height="46" rx="4" fill="rgba(200,165,64,.06)" stroke="#28224a"/><text x="197" y="68" fill="#ddd0b5" font-family="Cinzel" font-size="9" text-anchor="middle">⚔ ATTAQUE</text><text x="197" y="84" fill="#7a7098" font-size="9" text-anchor="middle">Lancer les dés</text><rect x="268" y="48" width="118" height="46" rx="4" fill="rgba(200,165,64,.06)" stroke="#28224a"/><text x="327" y="68" fill="#ddd0b5" font-family="Cinzel" font-size="9" text-anchor="middle">🏰 FORTIF.</text><text x="327" y="84" fill="#7a7098" font-size="9" text-anchor="middle">Renforcer</text>'},
+];
+let tutIdx=0;
+
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let G={user:null,players:[],terr:[],deck:[],pCards:[],cur:0,phase:'draft',toDraft:0,sel:-1,atkFrom:-1,ftFrom:-1,conquered:false,turn:0,round:0,weather:0,tradeN:0,opts:{w:true,s:true,m:false},aiLvl:1,missions:[],strat:{blitz:false,shield:false},log:[],online:false,roomCode:'',isHost:false};
+let SP=[],SOpts={w:true,s:true,m:false},isOnlineMode=false;
+let VB={x:0,y:0,w:1000,h:540};
+let dragSt=null,vbDrag=null,hov=-1,animId=0,pT=0;
+let gun=null,gunRoom=null,myGID='imp_'+Math.random().toString(36).slice(2,9);
+let lobbyPs={};
+
+// ══════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+function se(tag,a,p){const e=document.createElementNS(NS,tag);Object.entries(a||{}).forEach(([k,v])=>e.setAttribute(k,v));if(p)p.appendChild(e);return e;}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=~~(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const roll=n=>Array.from({length:n},()=>~~(Math.random()*6)+1);
+let ntm=null;
+function notify(m,d=2600){const e=$('nt');e.textContent=m;e.classList.add('on');if(ntm)clearTimeout(ntm);ntm=setTimeout(()=>e.classList.remove('on'),d);}
+function addLog(m,t){G.log.push([m,t||'']);rLog();}
+function rLog(){const e=$('gl');e.innerHTML='';G.log.slice(-9).forEach(([m,t])=>{const d=document.createElement('div');d.className='le '+(t||'');d.textContent=m;e.prepend(d);});}
+function openM(id){$(id).classList.add('on');}
+function closeM(id){$(id).classList.remove('on');}
+document.querySelectorAll('.mbg').forEach(e=>e.addEventListener('click',ev=>{if(ev.target===e)e.classList.remove('on');}));
+
+// ══════════════════════════════════════════════════════════
+// ACCOUNTS
+// ══════════════════════════════════════════════════════════
+const accs=()=>JSON.parse(localStorage.getItem('imp_acc')||'{}');
+const saveAccs=a=>localStorage.setItem('imp_acc',JSON.stringify(a));
+const gSt=u=>{const s=JSON.parse(localStorage.getItem('imp_st')||'{}');return s[u]||{w:0,g:0};};
+const sSt=(u,s)=>{const a=JSON.parse(localStorage.getItem('imp_st')||'{}');a[u]=s;localStorage.setItem('imp_st',JSON.stringify(a));};
+function doLogin(){
+  const u=$('lu').value.trim(),p=$('lp').value;
+  if(!u||!p)return $('aerr').textContent='Remplis tous les champs.';
+  const a=accs();if(!a[u]||a[u]!==p)return $('aerr').textContent='Identifiants invalides.';
+  G.user=u;$('aerr').textContent='';showSc('m');$('mname').textContent=u;chkSave();
+  if(!localStorage.getItem('imp_td'))openTut();
+}
+function doReg(){
+  const u=$('ru').value.trim(),p=$('rp').value,c=$('rc').value;
+  if(!u||!p||!c)return $('aerr').textContent='Remplis tous les champs.';
+  if(u.length<3)return $('aerr').textContent='Nom : 3 caractères minimum.';
+  if(p.length<4)return $('aerr').textContent='Mot de passe : 4 caractères minimum.';
+  if(p!==c)return $('aerr').textContent='Mots de passe différents.';
+  const a=accs();if(a[u])return $('aerr').textContent='Nom déjà pris.';
+  a[u]=p;saveAccs(a);G.user=u;$('aerr').textContent='';showSc('m');$('mname').textContent=u;chkSave();
+  notify('Bienvenue, Commandant '+u+' !');openTut();
+}
+function doLogout(){G.user=null;showSc('l');}
+function chkSave(){$('bcont').style.display=localStorage.getItem('imp_sv_'+(G.user||''))?'block':'none';}
+function loadSave(){
+  const r=localStorage.getItem('imp_sv_'+(G.user||''));if(!r)return;
+  Object.assign(G,JSON.parse(r));showSc('g');initSVG();uAll();
+  if(G.players[G.cur]?.isAI)setTimeout(()=>aiTurn(G.cur),900);
+}
+function savGame(){
+  const s={players:G.players,terr:G.terr,deck:G.deck,pCards:G.pCards,cur:G.cur,phase:G.phase,toDraft:G.toDraft,conquered:G.conquered,turn:G.turn,round:G.round,weather:G.weather,tradeN:G.tradeN,opts:G.opts,aiLvl:G.aiLvl,missions:G.missions};
+  localStorage.setItem('imp_sv_'+(G.user||''),JSON.stringify(s));
+}
+
+// ══════════════════════════════════════════════════════════
+// SCREENS
+// ══════════════════════════════════════════════════════════
+function showSc(s){document.querySelectorAll('.sc').forEach(e=>e.classList.remove('on'));$('s'+s).classList.add('on');}
+function stab(t,b){document.querySelectorAll('.tb').forEach(e=>e.classList.remove('on'));document.querySelectorAll('.tp').forEach(e=>e.classList.remove('on'));$('tp-'+t).classList.add('on');b.classList.add('on');}
+function goMenu(){cancelAnimationFrame(animId);$('wo').classList.remove('on');showSc('m');if(G.user){$('mname').textContent=G.user;chkSave();}}
+function goSetup(online){
+  isOnlineMode=online;
+  $('setup-local').style.display=online?'none':'block';
+  $('setup-online').style.display=online?'block':'none';
+  $('setup-title').textContent=online?'MODE MULTIJOUEUR':'ASSEMBLER VOS FORCES';
+  $('setup-go').textContent=online?'CONFIGURER LA SALLE →':'LANCER →';
+  if(!online){
+    SP=[{n:G.user||'Joueur 1',isAI:false,ci:0},{n:'Commandant IA',isAI:true,ci:1},{n:'Seigneur IA',isAI:true,ci:2}];
+    SOpts={w:true,s:true,m:false};
+    rPRows();
+  } else {
+    $('online-name').value=G.user||'';
+    detectLocalIP();
+  }
+  SOpts={w:true,s:true,m:false};
+  ['w','s','m'].forEach(k=>{const t=$('tog-'+k);t.textContent=SOpts[k]?'ON':'OFF';t.className='tog'+(SOpts[k]?' on':'');});
+  ['w','s','m'].forEach(k=>{const t=$('tog-'+k+'2');if(t){t.textContent=SOpts[k]?'ON':'OFF';t.className='tog'+(SOpts[k]?' on':'');}});
+  showSc('s');
+}
+function rPRows(){
+  const c=$('prows');c.innerHTML='';
+  SP.forEach((p,i)=>{
+    const r=document.createElement('div');r.className='prow';
+    r.innerHTML=`<div class="pdot" style="background:${PC[i]}"></div>
+    <input class="pni" value="${p.n}" onchange="SP[${i}].n=this.value">
+    <select class="psel" onchange="SP[${i}].isAI=this.value==='ai'">
+      <option value="human"${!p.isAI?' selected':''}>Humain</option>
+      <option value="ai"${p.isAI?' selected':''}>IA</option>
+    </select>
+    ${SP.length>2?`<button class="bdel" onclick="rmP(${i})">✕</button>`:''}`;
+    c.appendChild(r);
+  });
+  $('bap').style.display=SP.length>=6?'none':'block';
+}
+function addP(){if(SP.length>=6)return;SP.push({n:'Joueur '+(SP.length+1),isAI:true,ci:SP.length});rPRows();}
+function rmP(i){if(SP.length<=2)return;SP.splice(i,1);SP.forEach((p,j)=>p.ci=j);rPRows();}
+function tOpt(k,btn){SOpts[k]=!SOpts[k];btn.textContent=SOpts[k]?'ON':'OFF';btn.className='tog'+(SOpts[k]?' on':'');}
+function tOpt2(k,btn){SOpts[k]=!SOpts[k];btn.textContent=SOpts[k]?'ON':'OFF';btn.className='tog'+(SOpts[k]?' on':'');}
+function onNetMode(){
+  const v=$('net-mode').value;
+  $('setup-internet').style.display=v==='internet'?'block':'none';
+  $('setup-lan').style.display=v==='lan'?'block':'none';
+  if(v==='lan')detectLocalIP();
+}
+
+// LAN — Detect local IP via WebRTC trick
+function detectLocalIP(){
+  try{
+    const pc=new RTCPeerConnection({iceServers:[]});
+    pc.createDataChannel('');
+    pc.createOffer().then(o=>pc.setLocalDescription(o));
+    pc.onicecandidate=e=>{
+      if(!e.candidate)return;
+      const m=e.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
+      if(m&&!m[1].startsWith('127.')&&!m[1].startsWith('169.')){
+        $('local-ip').value=m[1];
+        $('host-ip').placeholder='ex: '+m[1];
+        pc.close();
+      }
+    };
+  }catch(err){$('local-ip').value='Non détectée';}
+}
+function refreshIP(){detectLocalIP();}
+
+function startOrOnline(){
+  if(isOnlineMode){showSc('lo');initLobby();}
+  else{startGame();}
+}
+function showHOF(){
+  const s=gSt(G.user||'');
+  const all=JSON.parse(localStorage.getItem('imp_st')||'{}');
+  let h=`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #141228;margin-bottom:3px;font-size:12px"><span style="color:var(--dim)">Commandant</span><span style="color:var(--gold);font-family:'Cinzel',serif">${G.user||'—'}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #141228;font-size:12px"><span style="color:var(--dim)">Victoires</span><span style="color:var(--gold);font-family:'Cinzel',serif">👑 ${s.w}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #141228;font-size:12px"><span style="color:var(--dim)">Parties</span><span style="color:var(--gold);font-family:'Cinzel',serif">⚔ ${s.g}</span></div>
+  <div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid #141228;margin-bottom:11px;font-size:12px"><span style="color:var(--dim)">Taux de victoire</span><span style="color:var(--gold);font-family:'Cinzel',serif">${s.g?Math.round(s.w/s.g*100):0}%</span></div>`;
+  const top=Object.entries(all).sort((a,b)=>b[1].w-a[1].w).slice(0,5);
+  if(top.length>1){h+='<div style="font-family:Cinzel,serif;font-size:8px;letter-spacing:2px;color:var(--dim);margin-bottom:7px">CLASSEMENT GLOBAL</div>';top.forEach(([u,st],i)=>{h+=`<div style="display:flex;justify-content:space-between;font-size:11px;padding:3px 0"><span>${['🥇','🥈','🥉','4.','5.'][i]} ${u}</span><span style="color:var(--gold)">${st.w}V / ${st.g}P</span></div>`;});}
+  $('hofc').innerHTML=h;openM('m-hof');
+}
+
+// ══════════════════════════════════════════════════════════
+// ONLINE — GUN.JS (Internet + LAN)
+// ══════════════════════════════════════════════════════════
+function initGun(lanMode, hostIP){
+  if(gun)return;
+  if(typeof Gun==='undefined'){notify('Gun.js non disponible — vérifiez votre connexion.');return;}
+  let peers;
+  if(lanMode){
+    const ip=hostIP||$('local-ip').value||'localhost';
+    peers=[`http://${ip}:8765/gun`,`ws://${ip}:8765/gun`];
+  } else {
+    peers=['https://gun-manhattan.herokuapp.com/gun','https://relay.peer.ooo/gun'];
+  }
+  gun=Gun(peers);
+}
+function genCode(){const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';return Array.from({length:6},()=>c[~~(Math.random()*c.length)]).join('');}
+function initLobby(){
+  const nm=$('net-mode').value;
+  const isLAN=nm==='lan';
+  $('ltitle').textContent=isLAN?'SALLE RÉSEAU LOCAL (LAN)':'SALLE EN LIGNE';
+  $('lnet-info').textContent=isLAN?'Mode LAN — Même réseau Wi-Fi requis':'Mode Internet — Partout dans le monde';
+  $('lcreate').style.display='none';$('ljoin').style.display='none';$('lchoice').style.display='flex';
+  $('bstart').disabled=true;lobbyPs={};rLPList();
+  const hostIP=isLAN?($('host-ip').value||$('local-ip').value||'localhost'):'';
+  initGun(isLAN,hostIP);
+}
+function showCreate(){
+  $('lchoice').style.display='none';$('lcreate').style.display='block';
+  const code=genCode();G.roomCode=code;G.isHost=true;
+  $('rcode').textContent=code;
+  joinGun(code,true);
+}
+function showJoin(){$('lchoice').style.display='none';$('ljoin').style.display='block';}
+function copyCode(){try{navigator.clipboard.writeText(G.roomCode);}catch(e){}notify('Code copié : '+G.roomCode);}
+function joinRoom(){
+  const code=$('jcode').value.trim().toUpperCase();
+  if(code.length!==6)return notify('Code invalide (6 caractères).');
+  G.roomCode=code;G.isHost=false;$('ljoin').style.display='none';joinGun(code,false);
+}
+function joinGun(code,isHost){
+  if(!gun){notify('Impossible de se connecter. Vérifiez votre connexion.');return;}
+  gunRoom=gun.get('imp-v5').get(code);
+  const myName=$('online-name').value.trim()||G.user||'Joueur';
+  gunRoom.get('players').get(myGID).put({name:myName,id:myGID,host:isHost,ts:Date.now()});
+  gunRoom.get('players').map().on((data,key)=>{if(data&&data.name){lobbyPs[key]=data;rLPList();}});
+  gunRoom.get('state').on(data=>{
+    if(!data)return;
+    try{const s=JSON.parse(data);const was=!G.players.length;Object.assign(G,s);if(was){showSc('g');initSVG();}renderMap();uAll();}catch(e){}
+  });
+  if(isHost)$('bstart').disabled=false;
+}
+function rLPList(){
+  const list=Object.values(lobbyPs).filter(p=>p&&p.name);
+  const el=$('lpl');el.innerHTML='';
+  if(!list.length){el.innerHTML='<div style="color:var(--dim);font-size:11px;text-align:center;padding:10px">En attente de joueurs…</div>';return;}
+  list.forEach((p,i)=>{const d=document.createElement('div');d.className='lpi';d.innerHTML=`<div class="lpd" style="background:${PC[i%6]}"></div><span class="lpn">${p.name}</span><span class="lps"><span class="ob">EN LIGNE</span></span>`;el.appendChild(d);});
+}
+function startOnline(){
+  if(!G.isHost)return;
+  const list=Object.values(lobbyPs).filter(p=>p&&p.name);
+  SP=list.map((p,i)=>({n:p.name,isAI:false,ci:i}));
+  if(SP.length<2)SP.push({n:'IA',isAI:true,ci:SP.length});
+  G.online=true;startGame();
+  setTimeout(()=>{syncOnline();},600);
+}
+function syncOnline(){
+  if(!gunRoom||!G.isHost||!G.online)return;
+  const s={players:G.players,terr:G.terr,deck:G.deck,pCards:G.pCards,cur:G.cur,phase:G.phase,toDraft:G.toDraft,conquered:G.conquered,turn:G.turn,round:G.round,weather:G.weather,tradeN:G.tradeN,opts:G.opts,missions:G.missions};
+  gunRoom.get('state').put(JSON.stringify(s));
+}
+
+// ══════════════════════════════════════════════════════════
+// GAME START
+// ══════════════════════════════════════════════════════════
+function startGame(){
+  const n=SP.length;
+  G.players=SP.map((p,i)=>({n:p.n,isAI:p.isAI,color:PC[i],ci:i,alive:true}));
+  G.opts=Object.assign({},SOpts);G.aiLvl=parseInt($('ai-lvl').value)||1;
+  G.tradeN=0;G.turn=0;G.round=0;G.deck=[];G.pCards=G.players.map(()=>[]);
+  G.log=[];G.strat={blitz:false,shield:false};G.missions=[];
+  G.deck=buildDeck(G.opts.s);
+  const idx=shuffle([...Array(42).keys()]);
+  G.terr=Array(42).fill(null).map(()=>({owner:-1,troops:0}));
+  const iT=INIT_T[n];
+  for(let t=0;t<42;t++)G.terr[idx[t]]={owner:t%n,troops:1};
+  const pT2=Array(n).fill(0);G.terr.forEach(t=>{if(t.owner>=0)pT2[t.owner]++;});
+  for(let p=0;p<n;p++){let r=iT-pT2[p];const own=G.terr.map((t,i)=>t.owner===p?i:-1).filter(i=>i>=0);while(r>0){G.terr[own[~~(Math.random()*own.length)]].troops++;r--;}}
+  if(G.opts.m){const ms=shuffle([...Array(MISSIONS.length).keys()]);G.missions=G.players.map((_,i)=>MISSIONS[ms[i%MISSIONS.length]]);}
+  G.weather=G.opts.w?~~(Math.random()*WEATHER.length):0;
+  G.cur=0;G.phase='draft';G.conquered=false;G.toDraft=calcDraft(0);G.sel=-1;G.atkFrom=-1;G.ftFrom=-1;
+  showSc('g');initSVG();uAll();showWB();showMsB();
+  addLog(`Conquête — ${n} commandants s'affrontent !`);
+  if(G.players[0].isAI)setTimeout(()=>aiTurn(0),1000);
+}
+function buildDeck(ws){
+  const d=[];const types=['infantry','cavalry','cannon'];
+  TD.forEach((t,i)=>d.push({type:types[i%3],tid:t.id,n:t.n}));
+  d.push({type:'wild',tid:-1,n:'Joker'},{type:'wild',tid:-1,n:'Joker'});
+  if(ws)STRAT.forEach(s=>{d.push({type:'stratagem',sid:s.id,n:s.n,ico:s.ico,d:s.d});d.push({type:'stratagem',sid:s.id,n:s.n,ico:s.ico,d:s.d});});
+  return shuffle([...d]);
+}
+
+// ══════════════════════════════════════════════════════════
+// TURN
+// ══════════════════════════════════════════════════════════
+function calcDraft(p){
+  const own=G.terr.filter(t=>t.owner===p).length;
+  let b=Math.max(3,~~(own/3));
+  if(G.opts.w&&WEATHER[G.weather].e==='drought')return b;
+  CONTS.forEach((c,ci)=>{if(TD.filter(t=>t.c===ci).every(t=>G.terr[t.id].owner===p))b+=c.bonus;});
+  return b;
+}
+function startTurn(p){
+  G.cur=p;G.phase='draft';G.conquered=false;G.atkFrom=-1;G.ftFrom=-1;G.sel=-1;G.strat={blitz:false,shield:false};
+  let d=calcDraft(p);
+  const ri=G.pCards[p].findIndex(c=>c.type==='stratagem'&&c.sid==='rally');
+  if(ri>=0){d+=5;G.pCards[p].splice(ri,1);addLog(`${G.players[p].n} : Ralliement ! +5.`,'crd');}
+  G.toDraft=d;
+  if(p===0){G.round++;if(G.opts.w){G.weather=~~(Math.random()*WEATHER.length);showWB();}}
+  addLog(`Tour de ${G.players[p].n} — ${d} troupes.`);
+  renderMap();uAll();uTDots();if(!G.players[p].isAI)notify(`Tour de ${G.players[p].n}`);
+  showMsB();if(G.online)syncOnline();
+}
+function endTurn(){
+  if(G.conquered&&G.deck.length>0){G.pCards[G.cur].push(G.deck.pop());addLog(`${G.players[G.cur].n} pioche une carte.`,'crd');}
+  savGame();if(chkWin())return;
+  let next=(G.cur+1)%G.players.length;
+  while(!G.players[next].alive)next=(next+1)%G.players.length;
+  setTimeout(()=>{startTurn(next);if(G.players[next].isAI)setTimeout(()=>aiTurn(next),600);},300);
+}
+
+// ══════════════════════════════════════════════════════════
+// COMBAT
+// ══════════════════════════════════════════════════════════
+function doAtk(from,to){
+  const att=G.terr[from],def=G.terr[to];
+  if(att.owner!==G.cur||def.owner===G.cur||!TD[from].adj.includes(to)||att.troops<2)return;
+  let an=Math.min(3,att.troops-1),dn=Math.min(2,def.troops);
+  if(G.opts.w){if(WEATHER[G.weather].e==='storm')an=Math.max(1,an-1);if(WEATHER[G.weather].e==='blizzard'&&TD[from].c===0){notify('❄ Blizzard ! Nordica ne peut pas attaquer !');return;}}
+  if(G.strat.blitz){an=Math.min(4,an+1);G.strat.blitz=false;}
+  if(G.strat.shield){dn=Math.min(3,dn+1);G.strat.shield=false;}
+  let ad=roll(an).sort((a,b)=>b-a),dd=roll(dn).sort((a,b)=>b-a);
+  if(G.opts.w&&WEATHER[G.weather].e==='wind'){const r=~~(Math.random()*6)+1;ad[ad.length-1]=Math.max(ad[ad.length-1],r);ad.sort((a,b)=>b-a);}
+  let al=0,dl=0;const wins=[];
+  for(let i=0;i<Math.min(an,dn);i++){if(ad[i]>dd[i]){dl++;wins.push(true);}else{al++;wins.push(false);}}
+  att.troops-=al;def.troops-=dl;
+  const cq=def.troops<=0,defO=def.owner;
+  addLog(`${G.players[G.cur].n} attaque ${TD[to].n} A:[${ad}] D:[${dd}]`,'bat');
+  showDice(ad,dd,wins,`${TD[from].n} → ${TD[to].n}`,()=>{
+    if(cq){const mx=att.troops-1,mn=Math.min(an,mx);if(mx<=0){conq(from,to,0,defO);return;}troopModal('AVANCEZ !',`${TD[from].n} → ${TD[to].n}`,mn,mx,n2=>conq(from,to,n2,defO));}
+    else{G.atkFrom=-1;renderMap();uAll();}
+  });
+}
+function conq(from,to,n,oldO){
+  const att=G.terr[from],def=G.terr[to];
+  if(n===0){const mv=Math.max(1,~~(att.troops/2));att.troops-=mv;def.owner=G.cur;def.troops=mv;}else{att.troops-=n;def.owner=G.cur;def.troops=n;}
+  if(att.troops<1)att.troops=1;G.conquered=true;G.atkFrom=-1;
+  addLog(`${G.players[G.cur].n} conquiert ${TD[to].n} !`,'bat');
+  if(oldO>=0&&G.terr.filter(t=>t.owner===oldO).length===0){
+    G.players[oldO].alive=false;G.pCards[G.cur].push(...G.pCards[oldO]);G.pCards[oldO]=[];
+    addLog(`${G.players[oldO].n} éliminé !`,'bat');notify(G.players[oldO].n+' ÉLIMINÉ !');
+  }
+  if(chkWin())return;renderMap();uAll();uTDots();if(G.online)syncOnline();
+}
+function connected(from,to,p){
+  if(from===to)return false;const vis=new Set([from]),q=[from];
+  while(q.length){const cur=q.shift();for(const a of TD[cur].adj){if(a===to)return true;if(!vis.has(a)&&G.terr[a].owner===p){vis.add(a);q.push(a);}}}
+  return false;
+}
+function doFort(from,to,n){
+  G.terr[from].troops-=n;G.terr[to].troops+=n;G.ftFrom=-1;
+  addLog(`${G.players[G.cur].n} : ${n} troupes ${TD[from].n}→${TD[to].n}`);
+  renderMap();uAll();endTurn();
+}
+
+// ══════════════════════════════════════════════════════════
+// CARDS
+// ══════════════════════════════════════════════════════════
+function vSet(cards){
+  const t=cards.map(c=>c.type==='wild'?null:c.type);const w=t.filter(x=>!x).length;
+  if(w>=2)return true;const r=t.filter(x=>x);const u=new Set(r);return u.size===1||u.size===3;
+}
+function trIdx(cards){
+  const ni=cards.map((c,i)=>c.type!=='stratagem'?i:-1).filter(i=>i>=0);if(ni.length<3)return null;
+  for(let a=0;a<ni.length-2;a++)for(let b=a+1;b<ni.length-1;b++)for(let c=b+1;c<ni.length;c++){if(vSet([cards[ni[a]],cards[ni[b]],cards[ni[c]]]))return[ni[a],ni[b],ni[c]];}
+  return null;
+}
+const TV=[4,6,8,10,12,15];
+const tVal=n=>n<=6?TV[n-1]:15+(n-6)*5;
+function doTrade(){
+  const p=G.cur;let idx=G.pCards[p].reduce((a,c,i)=>c._s?[...a,i]:a,[]);
+  if(idx.length<3)idx=trIdx(G.pCards[p]);
+  if(!idx)return notify('Aucun set valide !');
+  let bonus=0;idx.forEach(i=>{const c=G.pCards[p][i];if(c.tid>=0&&G.terr[c.tid]?.owner===p){G.terr[c.tid].troops+=2;bonus+=2;}});
+  G.tradeN++;const val=tVal(G.tradeN);G.toDraft+=val;
+  idx.sort((a,b)=>b-a).forEach(i=>G.pCards[p].splice(i,1));G.pCards[p].forEach(c=>c._s=false);
+  addLog(`${G.players[p].n} échange pour ${val} troupes${bonus?' (+'+bonus+' bonus)':''}.`,'crd');
+  notify(`Échange : +${val} troupes !`);renderMap();uAll();
+}
+function useStrat(i){
+  const p=G.cur;if(G.players[p].isAI)return;
+  const c=G.pCards[p][i];if(!c||c.type!=='stratagem')return;
+  switch(c.sid){
+    case 'blitz':G.strat.blitz=true;notify('⚡ Blitz activé !');break;
+    case 'shield':G.strat.shield=true;notify('🛡 Bouclier activé !');break;
+    case 'plague':
+      const v=G.terr.map((t,j)=>t.owner!==p&&t.troops>1?j:-1).filter(j=>j>=0);
+      if(v.length){const tgt=v[~~(Math.random()*v.length)];G.terr[tgt].troops=Math.max(1,G.terr[tgt].troops-3);addLog(`☠ Peste frappe ${TD[tgt].n} !`,'crd');notify('☠ Peste !');renderMap();}
+      break;
+    case 'rally':G.toDraft+=5;notify('⚑ +5 troupes !');break;
+    case 'spy':
+      const en=G.players.map((q,j)=>j).filter(j=>j!==p&&G.players[j].alive);
+      if(en.length)notify(`👁 ${G.players[en[0]].n} : ${G.pCards[en[0]].map(x=>x.n).join(', ').substring(0,55)||'aucune'}`);
+      break;
+  }
+  G.pCards[p].splice(i,1);rCards();uAll();
+}
+
+// ══════════════════════════════════════════════════════════
+// WIN CHECK
+// ══════════════════════════════════════════════════════════
+function chkWin(){
+  const alive=G.players.filter(p=>p.alive);
+  if(alive.length===1){showWin(G.players.indexOf(alive[0]),false);return true;}
+  const owners=new Set(G.terr.map(t=>t.owner));
+  if(owners.size===1&&![...owners].includes(-1)){showWin([...owners][0],false);return true;}
+  if(G.opts.m){for(let p=0;p<G.players.length;p++){if(!G.players[p].alive)continue;if(mDone(p)){showWin(p,true);return true;}}}
+  return false;
+}
+function mDone(p){
+  const m=G.missions[p]||'';
+  if(m.includes('Nordica')&&m.includes('Orientus'))return TD.filter(t=>t.c===0||t.c===4).every(t=>G.terr[t.id].owner===p);
+  if(m.includes('Méridius')&&m.includes('Australis'))return TD.filter(t=>t.c===1||t.c===5).every(t=>G.terr[t.id].owner===p);
+  if(m.includes('24 territoires'))return G.terr.filter(t=>t.owner===p).length>=24&&TD.filter(t=>t.c===2).every(t=>G.terr[t.id].owner===p);
+  if(m.includes('18 territoires'))return G.terr.filter(t=>t.owner===p&&t.troops>=2).length>=18;
+  if(m.includes('Solaria'))return TD.filter(t=>t.c===3||t.c===5).every(t=>G.terr[t.id].owner===p);
+  return false;
+}
+function showWin(w,mission){
+  const s=gSt(G.user||'');s.w++;s.g++;sSt(G.user||'',s);
+  localStorage.removeItem('imp_sv_'+(G.user||''));
+  $('wtxt').textContent=mission?`${G.players[w].n} a accompli sa mission secrète !`:`${G.players[w].n} a conquis le monde !`;
+  $('wo').classList.add('on');addLog(`🏆 ${G.players[w].n} remporte la conquête !`,'win');
+}
+
+// ══════════════════════════════════════════════════════════
+// AI
+// ══════════════════════════════════════════════════════════
+function aiTurn(p){
+  if(!G.players[p]?.alive||!G.players[p].isAI)return;
+  const d=G.aiLvl===0?200:G.aiLvl===1?400:650;
+  if(G.pCards[p].length>=5)aiTrade(p);
+  aiDraft(p);renderMap();uAll();
+  const doA=()=>{
+    if(!G.players[p]?.alive)return;
+    const atk=bAtk(p);
+    if(atk)aiExA(p,atk.from,atk.to,()=>{if(G.players[p]?.alive)setTimeout(doA,d);else setTimeout(endTurn,200);});
+    else setTimeout(()=>{if(!G.players[p]?.alive)return;aiF(p);renderMap();uAll();setTimeout(endTurn,d/2);},d);
+  };
+  setTimeout(doA,d);
+}
+function aiTrade(p){const idx=trIdx(G.pCards[p]);if(!idx)return;idx.forEach(i=>{const c=G.pCards[p][i];if(c.tid>=0&&G.terr[c.tid]?.owner===p)G.terr[c.tid].troops+=2;});G.tradeN++;G.toDraft+=tVal(G.tradeN);idx.sort((a,b)=>b-a).forEach(i=>G.pCards[p].splice(i,1));addLog(`${G.players[p].n} échange des cartes.`,'crd');}
+function aiDraft(p){
+  if(G.toDraft<=0)return;
+  const own=G.terr.map((t,i)=>t.owner===p?i:-1).filter(i=>i>=0);
+  const brd=own.filter(i=>TD[i].adj.some(a=>G.terr[a].owner!==p));
+  let r=G.toDraft;
+  while(r>0){
+    if(!brd.length||G.aiLvl===0){G.terr[own[~~(Math.random()*own.length)]].troops++;}
+    else{let best=-1,bs=Infinity;brd.forEach(bi=>{const me=Math.min(...TD[bi].adj.filter(a=>G.terr[a].owner!==p).map(a=>G.terr[a].troops));const sc=G.terr[bi].troops-me;if(sc<bs){bs=sc;best=bi;}});G.terr[best>=0?best:brd[0]].troops++;}
+    r--;
+  }
+  G.toDraft=0;
+}
+function bAtk(p){
+  let best=null,bs=-Infinity;
+  G.terr.forEach((t,from)=>{
+    if(t.owner!==p||t.troops<2)return;
+    TD[from].adj.forEach(to=>{
+      if(G.terr[to].owner===p)return;
+      const adv=t.troops-G.terr[to].troops;
+      if(G.aiLvl===0&&adv<1)return;if(G.aiLvl===1&&adv<2)return;if(G.aiLvl===2&&adv<1)return;
+      let sc=adv;const ct=TD[to].c;
+      if(TD.filter(d=>d.c===ct).filter(d=>G.terr[d.id].owner===p).length===TD.filter(d=>d.c===ct).length-1)sc+=10;
+      if(sc>bs){bs=sc;best={from,to};}
+    });
+  });
+  return best;
+}
+function aiExA(p,from,to,cb){
+  const att=G.terr[from],def=G.terr[to];
+  let an=Math.min(3,att.troops-1),dn=Math.min(2,def.troops);
+  if(G.opts.w&&WEATHER[G.weather].e==='storm')an=Math.max(1,an-1);
+  if(G.opts.w&&WEATHER[G.weather].e==='blizzard'&&TD[from].c===0){cb();return;}
+  const ad=roll(an).sort((a,b)=>b-a),dd=roll(dn).sort((a,b)=>b-a);
+  let al=0,dl=0;for(let i=0;i<Math.min(an,dn);i++){if(ad[i]>dd[i])dl++;else al++;}
+  att.troops-=al;def.troops-=dl;
+  addLog(`${G.players[p].n}→${TD[to].n} [${ad}]vs[${dd}]`,'bat');
+  if(def.troops<=0){
+    const mv=Math.min(Math.max(an,1),att.troops-1)||1;att.troops-=mv;const defO=def.owner;def.owner=p;def.troops=mv;if(att.troops<1)att.troops=1;G.conquered=true;
+    addLog(`${G.players[p].n} conquiert ${TD[to].n} !`,'bat');
+    if(defO>=0&&G.terr.filter(t=>t.owner===defO).length===0){G.players[defO].alive=false;G.pCards[p].push(...G.pCards[defO]);G.pCards[defO]=[];addLog(`${G.players[defO].n} éliminé !`,'bat');}
+    if(chkWin())return;
+  }
+  renderMap();uAll();uTDots();setTimeout(cb,300);
+}
+function aiF(p){
+  if(G.aiLvl===0)return;
+  const safe=G.terr.map((t,i)=>t.owner===p&&t.troops>3&&!TD[i].adj.some(a=>G.terr[a].owner!==p)?i:-1).filter(i=>i>=0);
+  const brd=G.terr.map((t,i)=>t.owner===p&&TD[i].adj.some(a=>G.terr[a].owner!==p)?i:-1).filter(i=>i>=0);
+  if(!safe.length||!brd.length)return;
+  for(const s of safe)for(const b of brd){if(connected(s,b,p)){const mv=~~((G.terr[s].troops-1)/2);if(mv>0){G.terr[s].troops-=mv;G.terr[b].troops+=mv;return;}}}
+}
+
+// ══════════════════════════════════════════════════════════
+// SVG MAP — CIRCLE-BASED (CLEAN)
+// ══════════════════════════════════════════════════════════
+const R=18; // territory circle radius
+function initSVG(){
+  VB={x:0,y:0,w:1000,h:540};apVB();
+  drawCBG();drawLines();buildNodes();buildLeg();
+  const s=$('ws');
+  s.addEventListener('wheel',onWheel,{passive:false});
+  s.addEventListener('mousedown',onMD);
+  window.addEventListener('mousemove',onMM);
+  window.addEventListener('mouseup',()=>{dragSt=null;vbDrag=null;$('ws').classList.remove('drag');});
+  s.addEventListener('mouseleave',()=>{hov=-1;hideTip();});
+  s.addEventListener('contextmenu',e=>{e.preventDefault();if(G.phase==='draft'&&hov>=0)draftAll(hov);});
+  cancelAnimationFrame(animId);animId=requestAnimationFrame(aLoop);
+}
+function apVB(){$('ws').setAttribute('viewBox',`${VB.x} ${VB.y} ${VB.w} ${VB.h}`);}
+function dz(dir){const cx=VB.x+VB.w/2,cy=VB.y+VB.h/2,f=dir>0?1.28:0.78;VB.w=Math.max(180,Math.min(1000,VB.w*f));VB.h=VB.w*540/1000;VB.x=Math.max(0,Math.min(1000-VB.w,cx-VB.w/2));VB.y=Math.max(0,Math.min(540-VB.h,cy-VB.h/2));apVB();}
+function rz(){VB={x:0,y:0,w:1000,h:540};apVB();}
+function onWheel(e){
+  e.preventDefault();const rect=$('ws').getBoundingClientRect();
+  const mx=(e.clientX-rect.left)/rect.width*VB.w+VB.x,my=(e.clientY-rect.top)/rect.height*VB.h+VB.y;
+  const f=e.deltaY>0?1.16:0.86,nw=Math.max(180,Math.min(1000,VB.w*f)),nh=nw*540/1000;
+  VB.x=Math.max(0,Math.min(1000-nw,mx-(mx-VB.x)*f));VB.y=Math.max(0,Math.min(540-nh,my-(my-VB.y)*f));
+  VB.w=nw;VB.h=nh;apVB();
+}
+function onMD(e){
+  // Don't drag if clicked on a territory
+  if(e.button!==0)return;
+  const rect=$('ws').getBoundingClientRect();
+  const mx=(e.clientX-rect.left)/rect.width*VB.w+VB.x,my=(e.clientY-rect.top)/rect.height*VB.h+VB.y;
+  let hitT=false;TD.forEach(t=>{const dx=t.cx-mx,dy=t.cy-my;if(dx*dx+dy*dy<(R+2)*(R+2))hitT=true;});
+  if(hitT)return;
+  dragSt={x:e.clientX,y:e.clientY};vbDrag={...VB};$('ws').classList.add('drag');
+}
+function onMM(e){
+  if(dragSt&&vbDrag){
+    const rect=$('ws').getBoundingClientRect();const sx=VB.w/rect.width,sy=VB.h/rect.height;
+    VB.x=Math.max(0,Math.min(1000-VB.w,vbDrag.x-(e.clientX-dragSt.x)*sx));
+    VB.y=Math.max(0,Math.min(540-VB.h,vbDrag.y-(e.clientY-dragSt.y)*sy));
+    apVB();return;
+  }
+  // hover
+  const rect=$('ws').getBoundingClientRect();
+  if(e.clientX<rect.left||e.clientX>rect.right||e.clientY<rect.top||e.clientY>rect.bottom){hov=-1;hideTip();return;}
+  const mx=(e.clientX-rect.left)/rect.width*VB.w+VB.x,my=(e.clientY-rect.top)/rect.height*VB.h+VB.y;
+  let h=-1;TD.forEach(t=>{const dx=t.cx-mx,dy=t.cy-my;if(dx*dx+dy*dy<(R+3)*(R+3))h=t.id;});
+  if(h!==hov){hov=h;if(h>=0)showTip(h,e.clientX,e.clientY);else hideTip();}else if(h>=0)moveTip(e.clientX,e.clientY);
+}
+function aLoop(){pT=(pT+.04)%Math.PI;renderMap();animId=requestAnimationFrame(aLoop);}
+
+function drawCBG(){
+  const g=$('cbg');g.innerHTML='';
+  CBGS.forEach((pts,i)=>{
+    se('polygon',{points:pts,fill:CONTS[i].bg,stroke:CONTS[i].cl,'stroke-width':'1','stroke-opacity':'.4','stroke-linejoin':'round'},g);
+  });
+}
+function drawLines(){
+  const g=$('clines');g.innerHTML='';
+  const done=new Set();
+  TD.forEach(t=>{
+    t.adj.forEach(a=>{
+      const key=[Math.min(t.id,a),Math.max(t.id,a)].join('-');if(done.has(key))return;done.add(key);
+      const ta=TD[a],isTr=t.tr&&t.tr.includes(a);
+      se('line',{x1:t.cx,y1:t.cy,x2:ta.cx,y2:ta.cy,
+        stroke:isTr?'rgba(200,165,64,.3)':'rgba(255,255,255,.09)',
+        'stroke-width':isTr?'1.2':'0.9',
+        'stroke-dasharray':isTr?'5,4':'none'},g);
+    });
+  });
+}
+function buildNodes(){
+  const gn=$('tnodes'),gl=$('tlabels');gn.innerHTML='';gl.innerHTML='';
+  // Continent color rings
+  TD.forEach(t=>{
+    se('circle',{id:'cr'+t.id,cx:t.cx,cy:t.cy,r:R+4,fill:'none',stroke:CONTS[t.c].cl,'stroke-width':'1.5','stroke-opacity':'.5','pointer-events':'none'},gn);
+  });
+  // Shadow circles
+  TD.forEach(t=>{
+    se('circle',{id:'sh'+t.id,cx:t.cx,cy:t.cy+1.5,r:R,fill:'rgba(0,0,0,.4)','pointer-events':'none','filter':'url(#sf)'},gn);
+  });
+  // Main circles
+  TD.forEach(t=>{
+    const c=se('circle',{id:'c'+t.id,cx:t.cx,cy:t.cy,r:R,fill:'#2a3a4a',stroke:'rgba(255,255,255,.2)','stroke-width':'1.2',style:'cursor:pointer'},gn);
+    c.addEventListener('click',ev=>{ev.stopPropagation();handleClick(t.id);});
+    c.addEventListener('contextmenu',ev=>{ev.preventDefault();if(G.phase==='draft')draftAll(t.id);});
+    c.addEventListener('mouseenter',ev=>{hov=t.id;showTip(t.id,ev.clientX,ev.clientY);});
+    c.addEventListener('mouseleave',()=>{hov=-1;hideTip();});
+  });
+  // Troop count text
+  TD.forEach(t=>{
+    const tx=se('text',{id:'tx'+t.id,x:t.cx,y:t.cy+4,'text-anchor':'middle',fill:'white','font-family':'Cinzel,serif','font-size':'10','font-weight':'bold','pointer-events':'none','filter':'url(#gf)'},gl);
+    tx.textContent='?';
+    // Name label (shows when zoomed in or hovered)
+    const nm=se('text',{id:'tn'+t.id,x:t.cx,y:t.cy+R+13,'text-anchor':'middle',fill:'rgba(0,0,0,0)','font-family':'Cinzel,serif','font-size':'7','pointer-events':'none'},gl);
+    nm.textContent=t.n;
+  });
+}
+function buildLeg(){
+  const el=$('legi');el.innerHTML='';
+  CONTS.forEach(c=>{const d=document.createElement('div');d.className='li';d.innerHTML=`<div class="lid" style="background:${c.cl}"></div><span class="lin">${c.n}</span><span class="lib">+${c.bonus}</span>`;el.appendChild(d);});
+}
+
+function renderMap(){
+  if(!G.terr.length)return;
+  const pulse=.5+.5*Math.sin(pT);
+  TD.forEach(t=>{
+    const ts=G.terr[t.id],owner=ts.owner;
+    const circ=$('c'+t.id),tx=$('tx'+t.id),nm=$('tn'+t.id),cr=$('cr'+t.id),sh=$('sh'+t.id);
+    if(!circ)return;
+    const pCol=owner>=0?G.players[owner].color:'#2a3a4a';
+    const isSel=G.atkFrom===t.id||G.ftFrom===t.id;
+    const isAT=G.phase==='attack'&&G.atkFrom>=0&&TD[G.atkFrom].adj.includes(t.id)&&ts.owner!==G.cur;
+    const isFT=G.phase==='fortify'&&G.ftFrom>=0&&ts.owner===G.cur&&t.id!==G.ftFrom&&connected(G.ftFrom,t.id,G.cur);
+    const isHov=hov===t.id;
+    // Fill
+    circ.setAttribute('fill',owner>=0?pCol:'#1e2a38');
+    // Ring color
+    if(cr)cr.setAttribute('stroke-opacity',owner>=0?'.6':'.2');
+    // Border
+    let sw='1.2',sc='rgba(255,255,255,.2)';
+    if(isSel){sw=(2.5+pulse*1.5).toFixed(1);sc=pCol;}
+    else if(isAT){sw=(2+pulse*2).toFixed(1);sc='rgba(255,80,40,.9)';}
+    else if(isFT){sw=(2+pulse*2).toFixed(1);sc='rgba(60,160,255,.9)';}
+    else if(isHov){sw='2';sc='rgba(255,255,255,.7)';}
+    circ.setAttribute('stroke',sc);circ.setAttribute('stroke-width',sw);
+    // Troop text
+    tx.textContent=ts.troops;
+    // Name label
+    const showNm=VB.w<500||isHov||isSel;
+    nm.setAttribute('fill',showNm?'rgba(240,210,70,.9)':'rgba(0,0,0,0)');
+  });
+  // Update line colors
+  const g=$('clines');let i=0;const done=new Set();
+  TD.forEach(t=>{t.adj.forEach(a=>{const key=[Math.min(t.id,a),Math.max(t.id,a)].join('-');if(done.has(key))return;done.add(key);const ln=g.children[i++];if(!ln)return;const so=G.terr[t.id].owner>=0&&G.terr[t.id].owner===G.terr[a].owner;const isTr=t.tr&&t.tr.includes(a);ln.setAttribute('stroke',isTr?'rgba(200,165,64,.35)':so?'rgba(255,255,255,.15)':'rgba(255,255,255,.07)');});});
+}
+
+// ══════════════════════════════════════════════════════════
+// MAP CLICK
+// ══════════════════════════════════════════════════════════
+function handleClick(tid){
+  if(!G.players.length||G.players[G.cur].isAI)return;
+  const t=G.terr[tid];
+  if(G.phase==='draft'){if(t.owner===G.cur&&G.toDraft>0){t.troops++;G.toDraft--;renderMap();uAll();}}
+  else if(G.phase==='attack'){
+    if(G.atkFrom<0){if(t.owner===G.cur&&t.troops>1&&TD[tid].adj.some(a=>G.terr[a].owner!==G.cur)){G.atkFrom=tid;renderMap();uAct();}}
+    else if(G.atkFrom===tid){G.atkFrom=-1;renderMap();uAct();}
+    else if(t.owner!==G.cur&&TD[G.atkFrom].adj.includes(tid)){doAtk(G.atkFrom,tid);}
+    else if(t.owner===G.cur&&t.troops>1&&TD[tid].adj.some(a=>G.terr[a].owner!==G.cur)){G.atkFrom=tid;renderMap();uAct();}
+  }
+  else if(G.phase==='fortify'){
+    if(G.ftFrom<0){if(t.owner===G.cur&&t.troops>1){G.ftFrom=tid;renderMap();uAct();}}
+    else if(G.ftFrom===tid){G.ftFrom=-1;renderMap();uAct();}
+    else if(t.owner===G.cur&&connected(G.ftFrom,tid,G.cur)){const mx=G.terr[G.ftFrom].troops-1;troopModal('FORTIFIER',`${TD[G.ftFrom].n} → ${TD[tid].n}`,1,mx,n=>doFort(G.ftFrom,tid,n));}
+  }
+}
+function draftAll(tid){if(G.phase!=='draft'||G.terr[tid].owner!==G.cur||G.players[G.cur].isAI)return;G.terr[tid].troops+=G.toDraft;G.toDraft=0;renderMap();uAll();}
+
+// ══════════════════════════════════════════════════════════
+// TOOLTIP
+// ══════════════════════════════════════════════════════════
+function showTip(tid,px,py){
+  const t=TD[tid],ts=G.terr[tid];
+  const ow=ts.owner>=0?G.players[ts.owner].n:'Inexploré';
+  const e=$('tip');
+  e.innerHTML=`<h4>${t.n}</h4><p>${CONTS[t.c].n}<br>Maître : <b style="color:${ts.owner>=0?G.players[ts.owner].color:'#7a7098'}">${ow}</b><br>Troupes : ${ts.troops} · Adj : ${t.adj.length}</p>`;
+  e.style.display='block';moveTip(px,py);
+}
+function moveTip(px,py){const e=$('tip');const W=window.innerWidth;let lx=px+14,ly=py-50;if(lx+140>W)lx=px-155;if(ly<0)ly=py+10;e.style.left=lx+'px';e.style.top=ly+'px';}
+function hideTip(){$('tip').style.display='none';}
+
+// ══════════════════════════════════════════════════════════
+// SIDEBAR
+// ══════════════════════════════════════════════════════════
+function uAll(){uSidebar();uAct();rCards();}
+function uSidebar(){
+  const pl=$('plist');pl.innerHTML='';
+  G.players.forEach((p,i)=>{
+    const own=G.terr.filter(t=>t.owner===i).length;
+    const trps=G.terr.filter(t=>t.owner===i).reduce((s,t)=>s+t.troops,0);
+    const el=document.createElement('div');el.className='pi'+(i===G.cur?' cur':'')+(!p.alive?' dead':'');
+    el.innerHTML=`<div class="pid" style="background:${p.color}"></div><div style="flex:1"><div class="pin">${p.n}${p.isAI?' 🤖':''}</div><div class="pis">${own} terr · ${trps}</div></div><span style="font-size:9px;color:var(--dim)">${G.pCards[i]?.length||0}🂠</span>`;
+    pl.appendChild(el);
+  });
+  const ti=$('tinfo');ti.innerHTML='';
+  if(G.players.length){
+    [['Round',G.round],['Phase',G.phase.toUpperCase()],['À placer',G.toDraft],['Météo',WEATHER[G.weather].ico+' '+WEATHER[G.weather].n]].forEach(([k,v])=>{
+      const r=document.createElement('div');r.className='ir';r.innerHTML=`<span>${k}</span><span>${v}</span>`;ti.appendChild(r);
+    });
+  }
+  const phases={draft:['🎲 DRAFT','Cliquez vos territoires. Clic droit = tout ici.'],attack:['⚔ ATTAQUE','Votre territoire → ennemi adjacent.'],fortify:['🏰 FORTIFICATION','Déplacez des troupes ou terminez.']};
+  const [pt,ht]=phases[G.phase]||['',''];
+  const isAI=G.players[G.cur]?.isAI;
+  $('ptitle').textContent=isAI?G.players[G.cur].n+' joue…':pt;
+  $('phelp').textContent=isAI?'':ht;
+  $('pb').classList.add('on');$('hph').textContent=pt;
+}
+function rCards(){
+  const p=G.cur;if(!G.pCards[p]||!G.players.length)return;
+  const cards=G.pCards[p];$('ccount').textContent='('+cards.length+')';
+  const grid=$('cgrid');grid.innerHTML='';
+  cards.forEach((c,i)=>{
+    const el=document.createElement('div');
+    const tc={infantry:'cti',cavalry:'ctc',cannon:'ctn',wild:'ctw',stratagem:'cts'}[c.type]||'';
+    el.className='card '+tc+(c._s?' sel':'');
+    const ico={infantry:'⚔',cavalry:'♘',cannon:'🔫',wild:'★',stratagem:c.ico||'✦'}[c.type]||'?';
+    el.innerHTML=`<div class="ci2">${ico}</div><div class="cn2">${c.n}</div>`;
+    if(c.type==='stratagem'){el.title=(c.d||'')+' (double-clic)';el.style.borderLeftColor='#6a1a9a';el.ondblclick=()=>{if(!G.players[p].isAI)useStrat(i);};}
+    else{el.onclick=()=>{if(G.players[p].isAI)return;c._s=!c._s;el.classList.toggle('sel',c._s);uTrBtn();};}
+    grid.appendChild(el);
+  });
+  uTrBtn();
+}
+function uTrBtn(){const p=G.cur;if(!G.pCards[p]){$('btr').disabled=true;return;}$('btr').disabled=!trIdx(G.pCards[p])||G.players[p]?.isAI;}
+function uAct(){
+  if(!G.players.length)return;
+  const p=G.players[G.cur];const btns=$('abtns'),info=$('ai2');btns.innerHTML='';
+  if(p.isAI){info.textContent=`${p.n} réfléchit…`;return;}
+  const add=(txt,cls,cb,dis=false)=>{const b=document.createElement('button');b.className='ab '+(cls||'');b.textContent=txt;b.disabled=dis;b.onclick=cb;btns.appendChild(b);};
+  if(G.phase==='draft'){
+    info.textContent=G.toDraft>0?`Placez ${G.toDraft} troupe${G.toDraft>1?'s':''}.`:'Toutes placées !';
+    add('⚔ PHASE D\'ATTAQUE','main',()=>{G.phase='attack';G.toDraft=0;renderMap();uAll();notify('Phase Attaque !');});
+  }else if(G.phase==='attack'){
+    const fr=G.atkFrom;info.textContent=fr<0?'Sélectionnez votre territoire.':`${TD[fr].n} (${G.terr[fr].troops}) → cliquez l\'ennemi.`;
+    if(fr>=0)add('✕ Annuler sélection','dng',()=>{G.atkFrom=-1;renderMap();uAct();});
+    add('→ FIN ATTAQUE','main',()=>{G.phase='fortify';G.atkFrom=-1;renderMap();uAll();notify('Phase Fortification !');});
+  }else if(G.phase==='fortify'){
+    const fr=G.ftFrom;info.textContent=fr<0?'Déplacez des troupes ou terminez.':`${TD[fr].n} → cliquez la destination.`;
+    if(fr>=0)add('✕ Annuler sélection','dng',()=>{G.ftFrom=-1;renderMap();uAct();});
+    add('✓ FIN DE TOUR','main',()=>endTurn());
+  }
+}
+function uTDots(){
+  const el=$('tdv');el.innerHTML='';
+  G.players.forEach((p,i)=>{const d=document.createElement('div');d.className='tdot'+(i===G.cur?' cur':'');d.style.background=p.alive?p.color:'#222';d.style.color=p.color;el.appendChild(d);});
+}
+function showWB(){if(!G.opts.w)return;const w=WEATHER[G.weather];const el=$('wb');el.textContent=`${w.ico} ${w.n} : ${w.d}`;$('hwt').textContent=`${w.ico} ${w.n}`;el.classList.add('on');setTimeout(()=>el.classList.remove('on'),4000);}
+function showMsB(){const p=G.cur;if(!G.opts.m||G.players[p]?.isAI||!G.missions[p]){$('msb').style.display='none';return;}$('mst').textContent=G.missions[p];$('msb').style.display='block';}
+
+// ══════════════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════════════
+let dcb=null;
+function showDice(ad,dd,wins,sub,cb){
+  dcb=cb;$('dsub').textContent=sub||'';$('datt').innerHTML='';$('ddef').innerHTML='';
+  ad.forEach((v,i)=>{const el=document.createElement('div');el.className='die da'+(wins[i]?' won':'');el.textContent=v;$('datt').appendChild(el);});
+  dd.forEach((v,i)=>{const el=document.createElement('div');el.className='die dd'+(wins[i]===false?' won':'');el.textContent=v;$('ddef').appendChild(el);});
+  $('dres').textContent=`Attaquant perd ${wins.filter(w=>!w).length} · Défenseur perd ${wins.filter(w=>w).length}`;
+  openM('m-dice');setTimeout(()=>{if($('m-dice').classList.contains('on'))closeDice();},2800);
+}
+function closeDice(){closeM('m-dice');const cb=dcb;dcb=null;if(cb)cb();}
+let tcb=null;
+function troopModal(title,sub,mn,mx,cb){tcb=cb;$('ttitle').textContent=title;$('tsub').textContent=sub;const sl=$('tsl');sl.min=mn;sl.max=mx;sl.value=mn;$('tval').textContent=mn;openM('m-troop');}
+function confirmTroop(){closeM('m-troop');const n=parseInt($('tsl').value);const cb=tcb;tcb=null;if(cb)cb(n);}
+function cancelTroop(){closeM('m-troop');const cb=tcb;tcb=null;if(cb)cb(0);}
+
+// ══════════════════════════════════════════════════════════
+// TUTORIAL
+// ══════════════════════════════════════════════════════════
+function openTut(){tutIdx=0;renderTut();$('tut').classList.add('on');}
+function renderTut(){
+  const step=TUT[tutIdx],n=TUT.length;
+  $('tstep').textContent=`ÉTAPE ${tutIdx+1} / ${n}`;
+  $('ttit').textContent=step.t;$('ttxt').textContent=step.d;
+  $('tsvg').innerHTML=step.s||'';
+  const dots=$('tdots2');dots.innerHTML='';
+  TUT.forEach((_,i)=>{const d=document.createElement('div');d.className='tdot2'+(i===tutIdx?' on':'');dots.appendChild(d);});
+  $('tprev').style.opacity=tutIdx===0?'0.3':'1';
+  $('tnext').textContent=tutIdx===n-1?'JOUER MAINTENANT !':'SUIVANT →';
+}
+function tutNav(dir){
+  if(dir<0&&tutIdx>0){tutIdx--;renderTut();}
+  else if(dir>0&&tutIdx<TUT.length-1){tutIdx++;renderTut();}
+  else if(dir>0){$('tut').classList.remove('on');localStorage.setItem('imp_td','1');}
+}
+
+// ══════════════════════════════════════════════════════════
+// KEYBOARD
+// ══════════════════════════════════════════════════════════
+['lu','lp'].forEach(id=>{const e=$(id);if(e)e.addEventListener('keydown',ev=>{if(ev.key==='Enter')doLogin();});});
+['ru','rp','rc'].forEach(id=>{const e=$(id);if(e)e.addEventListener('keydown',ev=>{if(ev.key==='Enter')doReg();});});
+document.addEventListener('keydown',ev=>{
+  if(ev.key==='Escape'){document.querySelectorAll('.mbg.on').forEach(m=>m.classList.remove('on'));}
+});
+</script>
+</body>
+</html>
